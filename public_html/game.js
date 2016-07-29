@@ -116,7 +116,21 @@ function startLogic()
 						);
 			}
 		}
-		redraw(); ////////////////////////////////////////////////////////////////
+		
+		for (var x = 0; x < tileCountX; x++)
+		{
+			for (var y = 0; y < tileCountY; y++)
+			{
+				//ctx.rotate((90*spriteTiles[x][y].rotation)*Math.PI/180);
+				ctx.drawImage(image,
+						//spriteTiles[x][y].id * 32, // srcX the correct version
+						spriteTiles[x][y] * 32, // srcX the temp version
+						0, // srcY
+						32, 32,
+						x * bgTile.w, y * bgTile.h,
+						32, 32);
+			}
+		}
 	}
 
 	function showMenu()
@@ -219,22 +233,6 @@ function startLogic()
 						spriteTiles[x][y] = 1;
 			
 				
-			}
-		}
-	}
-	
-	function redraw() {
-		for (var x = 0; x < tileCountX; x++)
-		{
-			for (var y = 0; y < tileCountY; y++)
-			{
-				
-				ctx.drawImage(image,
-						spriteTiles[x][y] * 32, // srcX
-						0, // srcY
-						32, 32,
-						x * bgTile.w, y * bgTile.h,
-						32, 32);
 			}
 		}
 	}
