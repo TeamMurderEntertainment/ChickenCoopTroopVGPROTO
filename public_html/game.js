@@ -35,8 +35,6 @@ function startLogic()
 			image.removeEventListener( "load", loadHandler );
 
 			chicken_walk.removeEventListener( "canplaythrough", loadHandler );
-
-			startLogic();
 		}
 	}
 
@@ -44,9 +42,10 @@ function startLogic()
 	var MENU = 0;
 	var PLAYING = 1;
 	var GAMEEND = 2;
-	var gameState = MENU;
+	var gameState = PLAYING;
 
-	var sprites = [ [ ] ];
+	var sprites = [ ];
+	var spriteTiles = [ [ ] ];
 
 	var background = new SpriteObject();
 	background.srcY = 192;
@@ -54,7 +53,7 @@ function startLogic()
 	background.srcH = 768;
 	background.w = 1024;
 	background.h = 768;
-	background.visible = true;
+	background.visible = false;
 	sprites.push( background );
 
 	var title = new SpriteObject();
@@ -65,7 +64,7 @@ function startLogic()
 	title.h = 192;
 	title.x = canvas.width / 2 - title.halfWidth();
 	title.y = 20;
-	title.visible = true;
+	title.visible = false;
 	sprites.push( title );
 
 	var bgTile = new SpriteObject();
@@ -74,7 +73,6 @@ function startLogic()
 	bgTile.w = 32;
 	bgTile.h = 32;
 	bgTile.visible = true;
-	sprites.push( bgTile );
 
 
 
@@ -117,6 +115,20 @@ function startLogic()
 						);
 			}
 		}
+
+		for ( var i = 0; i < spriteTiles.length; i++ )
+		{
+			for ( var j = 0; j < spriteTiles[i].length; i++ )
+			{
+				ctx.rotate( ( spriteTiles[i][j].rotation * 90 ) * Math.PI / 180 );
+				ctx.drawImage( image,
+						(32*spriteTiles[i][j].id),0,
+						32,32,
+						(i*32),(j*32),
+						32,32);
+			}
+		}
+
 	}
 
 	function showMenu()
@@ -126,7 +138,7 @@ function startLogic()
 
 	function playGame()
 	{
-
+		genMap();
 	}
 
 	function endGame()
@@ -160,7 +172,7 @@ function startLogic()
 		{
 			for ( var j = 0; j < tileCountY; j++ )
 			{
-
+				
 			}
 		}
 	}
