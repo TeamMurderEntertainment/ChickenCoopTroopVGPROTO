@@ -6,6 +6,9 @@ function startLogic()
 	var assetsToLoad = [ ];
 	var assetsLoaded = 0;
 
+	var tileCountX = 32;
+	var tileCountY = 24;
+
 	console.log( "Loading..." );
 
 	// SFX files
@@ -43,8 +46,8 @@ function startLogic()
 	var GAMEEND = 2;
 	var gameState = MENU;
 
-	var sprites = [ ];
-	
+	var sprites = [ [ ] ];
+
 	var background = new SpriteObject();
 	background.srcY = 192;
 	background.srcW = 1024;
@@ -53,7 +56,7 @@ function startLogic()
 	background.h = 768;
 	background.visible = true;
 	sprites.push( background );
-	
+
 	var title = new SpriteObject();
 	title.srcX = 192;
 	title.srcW = 512;
@@ -64,6 +67,16 @@ function startLogic()
 	title.y = 20;
 	title.visible = true;
 	sprites.push( title );
+
+	var bgTile = new SpriteObject();
+	bgTile.srcW = 32;
+	bgTile.srcH = 32;
+	bgTile.w = 32;
+	bgTile.h = 32;
+	bgTile.visible = true;
+	sprites.push( bgTile );
+
+
 
 	function update()
 	{
@@ -113,12 +126,23 @@ function startLogic()
 
 	function playGame()
 	{
-
+		genMap();
 	}
 
 	function endGame()
 	{
 
+	}
+
+	function genMap()
+	{
+		for ( var i = 0; i < tileCountX; i++ )
+		{
+			for ( var j = 0; j < tileCountY; j++ )
+			{
+				
+			}
+		}
 	}
 	update();
 }
