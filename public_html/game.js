@@ -35,6 +35,9 @@ function startLogic()
 			image.removeEventListener( "load", loadHandler );
 
 			chicken_walk.removeEventListener( "canplaythrough", loadHandler );
+			
+			genMap();
+			update();
 		}
 	}
 
@@ -79,7 +82,7 @@ function startLogic()
 
 	function update()
 	{
-		window.requestAnimationFrame( update );
+		//window.requestAnimationFrame( update );
 		switch ( gameState )
 		{
 			case MENU:
@@ -100,7 +103,7 @@ function startLogic()
 
 	function render()
 	{
-		ctx.clearRect( 0, 0, canvas.width, canvas.height );
+		//ctx.clearRect( 0, 0, canvas.width, canvas.height );
 
 		for ( var i = 0; i < sprites.length; i++ )
 		{
@@ -121,14 +124,21 @@ function startLogic()
 		{
 			for (var y = 0; y < tileCountY; y++)
 			{
+				ctx.save();
+				ctx.translate(x * bgTile.w,y * bgTile.h);
+				
+				console.log(spriteTiles[x][y].id,spriteTiles[x][y].rotation*90);
+				console.log(x* bgTile.w,y * bgTile.h);
+				console.log("-------------------------------");
+				
 				ctx.rotate((90*spriteTiles[x][y].rotation)*Math.PI/180);
 				ctx.drawImage(image,
-						spriteTiles[x][y].id * 32, // srcX the correct version
-						//spriteTiles[x][y] * 32, // srcX the temp version
+						spriteTiles[x][y].id * 32,//srcX
 						0, // srcY
 						32, 32,
-						x * bgTile.w, y * bgTile.h,
+						0,0,
 						32, 32);
+				ctx.restore();
 			}
 		}
 	}
@@ -239,6 +249,5 @@ function startLogic()
 		}
 	}
 	
-	genMap();
-	update();
+	
 }
