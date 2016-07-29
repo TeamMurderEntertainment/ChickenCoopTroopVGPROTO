@@ -24,3 +24,8 @@ function removeObject(objectToRemove,array)
 		array.splice(index,1);
 	}
 }
+
+function getPercentage(a,b)
+{
+	return Math.floor((a / b)*100).toString();
+}
