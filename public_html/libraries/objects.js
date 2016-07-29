@@ -5,6 +5,7 @@ var SpriteObject = function ()
 	this.y = 0;
 	this.w = 32;
 	this.h = 32;
+	this.r = 0;
 
 	this.srcX = 0;
 	this.srcY = 0;
