@@ -126,7 +126,7 @@ function startLogic()
 
 	function playGame()
 	{
-		
+
 	}
 
 	function endGame()
@@ -134,13 +134,33 @@ function startLogic()
 
 	}
 
+	var spriteID = function ( id, rotation )
+	{
+		if ( id < 0 || id > 5 )
+			console.log( "Invalid ID : " + id );
+		if ( rotation < 0 || rotation > 3 )
+			console.log( "Invalid Rotation : " + rotation );
+
+		this.id = id;
+		this.rotation = rotation;
+	};
+
+	// dirt = 0
+	// rock = 1
+	// grass edge = 2
+	// grass corner = 3
+	// fence edge = 4
+	// fence corner = 5
+	// 
+	// rotation is 0-3
+	// 90*rotation clockwise
 	function genMap()
 	{
 		for ( var i = 0; i < tileCountX; i++ )
 		{
 			for ( var j = 0; j < tileCountY; j++ )
 			{
-				
+
 			}
 		}
 	}
