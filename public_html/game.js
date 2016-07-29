@@ -35,8 +35,6 @@ function startLogic()
 			image.removeEventListener( "load", loadHandler );
 
 			chicken_walk.removeEventListener( "canplaythrough", loadHandler );
-
-			startLogic();
 		}
 	}
 
@@ -46,7 +44,8 @@ function startLogic()
 	var GAMEEND = 2;
 	var gameState = MENU;
 
-	var sprites = [ [ ] ];
+	var sprites = [ ];
+	var spriteTiles = [[]];
 
 	var background = new SpriteObject();
 	background.srcY = 192;
@@ -117,6 +116,7 @@ function startLogic()
 						);
 			}
 		}
+		genMap(); ////////////////////////////////////////////////////////////////
 	}
 
 	function showMenu()
@@ -126,43 +126,87 @@ function startLogic()
 
 	function playGame()
 	{
-
+		
 	}
 
 	function endGame()
 	{
 
 	}
-
+	
 	var spriteID = function ( id, rotation )
-	{
-		if ( id < 0 || id > 5 )
-			console.log( "Invalid ID : " + id );
-		if ( rotation < 0 || rotation > 3 )
-			console.log( "Invalid Rotation : " + rotation );
-
-		this.id = id;
-		this.rotation = rotation;
-	};
-
-	// dirt = 0
-	// rock = 1
-	// grass edge = 2
-	// grass corner = 3
-	// fence edge = 4
-	// fence corner = 5
-	// 
-	// rotation is 0-3
-	// 90*rotation clockwise
+ 	{
+ 		if ( id < 0 || id > 5 )
+ 			console.log( "Invalid ID : " + id );
+ 		if ( rotation < 0 || rotation > 3 )
+ 			console.log( "Invalid Rotation : " + rotation );
+ 
+ 		this.id = id;
+ 		this.rotation = rotation;
+ 	};
+ 
+ 	// dirt = 0
+ 	// rock = 1
+ 	// grass edge = 2
+ 	// grass corner = 3
+ 	// fence edge = 4
+ 	// fence corner = 5
+ 	// 
+ 	// rotation is 0-3
+ 	// 90*rotation clockwise
+	
 	function genMap()
 	{
-		for ( var i = 0; i < tileCountX; i++ )
+		var spriteNum = 0;
+		
+		for ( var x = 0; x < tileCountX; x++ )
 		{
-			for ( var j = 0; j < tileCountY; j++ )
+			spriteTiles [x] = [];
+			for ( var y = 0; y < tileCountY; y++ )
 			{
-
+				spriteTiles[x][y] = 0;
+				
+				if (x == 0)
+					spriteTiles[x][y] = 2;
+				if (x == tileCountX-1)
+					spriteTiles[x][y] = 2;
+				if (y == 0)
+					spriteTiles[x][y] = 2;
+				if (y == tileCountY-1)
+					spriteTiles[x][y] = 2;
+				
+				
+				switch (spriteTiles[x][y])
+				{
+					case 5: //fenceCorner
+						spriteNum = 5;
+						break;
+					case 4: // fenceEdge
+						spriteNum = 4;
+						break;
+					case 3: // grassCorner
+						spriteNum = 3;
+						break;
+					case 2: // grassEdge
+						spriteNum = 2;
+						break;
+					case 1: // rock
+						spriteNum = 1;
+						break;
+					default: // dirt
+						spriteNum = 0;
+						break;
+				}
+				
+				ctx.drawImage(image,
+					spriteNum * 32,			// srcX
+					0,						// srcY
+					32, 32,
+					x * bgTile.w, y * bgTile.h,
+					32, 32);
 			}
 		}
 	}
+
 	update();
 }
