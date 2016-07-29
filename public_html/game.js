@@ -168,13 +168,48 @@ function startLogic()
 	// 90*rotation clockwise
 	function genMap()
 	{
-		for ( var i = 0; i < tileCountX; i++ )
+		var spriteNum = 0;
+		
+		for ( var x = 0; x < tileCountX; x++ )
 		{
-			for ( var j = 0; j < tileCountY; j++ )
+			spriteTiles [x] = [];
+			for ( var y = 0; y < tileCountY; y++ )
 			{
+				spriteTiles[x][y] = 0;
 				
+				if (x == 0)
+					spriteTiles[x][y] = 2;
+				if (x == tileCountX-1)
+					spriteTiles[x][y] = 2;
+				if (y == 0)
+					spriteTiles[x][y] = 2;
+				if (y == tileCountY-1)
+					spriteTiles[x][y] = 2;
+				
+				
+				switch (spriteTiles[x][y])
+				{
+					case 5: //fenceCorner
+						spriteNum = 5;
+						break;
+					case 4: // fenceEdge
+						spriteNum = 4;
+						break;
+					case 3: // grassCorner
+						spriteNum = 3;
+						break;
+					case 2: // grassEdge
+						spriteNum = 2;
+						break;
+					case 1: // rock
+						spriteNum = 1;
+						break;
+					default: // dirt
+						spriteNum = 0;
+						break;
+				}
 			}
 		}
 	}
 	update();
-}
+	}
