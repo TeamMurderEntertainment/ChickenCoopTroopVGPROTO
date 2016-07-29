@@ -126,7 +126,7 @@ function startLogic()
 
 	function playGame()
 	{
-		genMap();
+		
 	}
 
 	function endGame()
