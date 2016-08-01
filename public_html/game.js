@@ -29,7 +29,7 @@ function startLogic()
 
 		console.log(getPercentage(assetsLoaded, assetsToLoad.length) + " loaded...");
 
-		if ( assetsLoaded == assetsToLoad.length )
+		if (assetsLoaded == assetsToLoad.length)
 		{
 			console.log("Finished Loading");
 			image.removeEventListener("load", loadHandler);
@@ -70,6 +70,19 @@ function startLogic()
 	title.visible = true;
 	sprites.push(title);
 
+	var chicken = new SpriteObject();
+	chicken.srcX = 32;
+	chicken.srcY = 64;
+	chicken.srcW = 64;
+	chicken.srcH = 64;
+	chicken.w = 64;
+	chicken.h = 64;
+	chicken.x = canvas.width / 2 - chicken.halfWidth();
+	chicken.y = canvas.height / 2 - chicken.halfHeight();
+	chicken.speed = 5;
+	chicken.visible = false;
+	sprites.push(chicken);
+
 	var bgTile = new SpriteObject();
 	bgTile.srcW = 32;
 	bgTile.srcH = 32;
@@ -105,10 +118,10 @@ function startLogic()
 	{
 		//ctx.clearRect( 0, 0, canvas.width, canvas.height );
 
-		for ( var i = 0; i < sprites.length; i ++ )
+		for (var i = 0; i < sprites.length; i++)
 		{
 			var sprite = sprites[i];
-			if ( sprite.visible )
+			if (sprite.visible)
 			{
 
 				ctx.drawImage(image,
@@ -120,31 +133,28 @@ function startLogic()
 			}
 		}
 
-		for ( var x = 0; x < tileCountX; x ++ )
+		for (var x = 0; x < tileCountX; x++)
 		{
-			for ( var y = 0; y < tileCountY; y ++ )
+			for (var y = 0; y < tileCountY; y++)
 			{
 				ctx.save();
 				var tempX = 0;
 				var tempY = 0;
 				var rot = spriteTiles[x][y].rotation;
 
-				if ( rot == 0 )
+				if (rot == 0)
 				{
 					tempX = 0;
 					tempY = 0;
-				}
-				else if ( rot == 1 )
+				} else if (rot == 1)
 				{
 					tempX = 0;
-					tempY = - 1;
-				}
-				else if ( rot == 2 )
+					tempY = -1;
+				} else if (rot == 2)
 				{
-					tempX = - 1;
-					tempY = - 1;
-				}
-				else if ( rot == 3 )
+					tempX = -1;
+					tempY = -1;
+				} else if (rot == 3)
 				{
 					tempX = -1;
 					tempY = 0;
@@ -153,9 +163,9 @@ function startLogic()
 
 				ctx.translate((x * bgTile.w), (y * bgTile.h));
 
-				console.log(spriteTiles[x][y].id, spriteTiles[x][y].rotation * 90);
-				console.log(x * bgTile.w, y * bgTile.h);
-				console.log("-------------------------------");
+//				console.log(spriteTiles[x][y].id, spriteTiles[x][y].rotation * 90);
+//				console.log(x * bgTile.w, y * bgTile.h);
+//				console.log("-------------------------------");
 
 				ctx.rotate(((90 * spriteTiles[x][y].rotation) * Math.PI) / 180);
 				ctx.drawImage(image,
@@ -167,6 +177,8 @@ function startLogic()
 				ctx.restore();
 			}
 		}
+		//chicken here
+		canvas.addEventListener("click", updateChicken);
 	}
 
 	function showMenu()
@@ -186,9 +198,9 @@ function startLogic()
 
 	var spriteID = function (id, rotation)
 	{
-		if ( id < 0 || id > 5 )
+		if (id < 0 || id > 5)
 			console.log("Invalid ID : " + id);
-		if ( rotation < 0 || rotation > 3 )
+		if (rotation < 0 || rotation > 3)
 			console.log("Invalid Rotation : " + rotation);
 
 		this.id = id;
@@ -216,60 +228,61 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for ( var x = 0; x < tileCountX; x ++ )
+		for (var x = 0; x < tileCountX; x++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for ( var y = 0; y < tileCountY; y ++ )
+			for (var y = 0; y < tileCountY; y++)
 			{
 				id = 0;
 
 				//level border in clockwise order from top left
-				if ( y == 0 )								// top side
+				if (y == 0)								// top side
 					id = EDGE;
-				if ( x == tileCountX - 1 )					// right side
+				if (x == tileCountX - 1)					// right side
 				{
 					id = EDGE;
 					rotation = 1;
 				}
-				if ( y == tileCountY - 1 )					// bottom side
+				if (y == tileCountY - 1)					// bottom side
 				{
 					id = EDGE;
 					rotation = 2;
 				}
-				if ( x == 0 )								// left side
+				if (x == 0)								// left side
 				{
 					id = EDGE;
 					rotation = 3;
 				}
 
 				//level corner --- draws over border
-				if ( x == 0 && y == 0 )	{					//NW
+				if (x == 0 && y == 0)
+				{					//NW
 					id = CORNER;
 					rotation = 0;
 				}
-				if ( x == tileCountX - 1 && y == 0 )			//NE
+				if (x == tileCountX - 1 && y == 0)			//NE
 				{
 					id = CORNER;
 					rotation = 1;
 				}
-				if ( x == tileCountX - 1 && y == tileCountY - 1 )	//SE
+				if (x == tileCountX - 1 && y == tileCountY - 1)	//SE
 				{
 					id = CORNER;
 					rotation = 2;
 				}
-				if ( x == 0 && y == tileCountY - 1 )			//SW
+				if (x == 0 && y == tileCountY - 1)			//SW
 				{
 					id = CORNER;
 					rotation = 3;
 				}
 
 				//random rocks 1 space inside border
-				if ( x > 1 && x < (tileCountX - 1) - 1 )
-					if ( y > 1 && y < (tileCountY - 1) - 1 )
-						if ( Math.random() > 0.95 )
+				if (x > 1 && x < (tileCountX - 1) - 1)
+					if (y > 1 && y < (tileCountY - 1) - 1)
+						if (Math.random() > 0.95)
 							id = 1;
 
 				spriteTiles[x].push(new spriteID(id, rotation));
@@ -278,4 +291,57 @@ function startLogic()
 	}
 
 
+
+	function updateChicken(e) {
+		var x;
+		var y;
+
+		if (e.pageX != undefined && e.pageY != undefined)
+		{
+			x = e.pageX;
+			y = e.pageY;
+		}
+
+		x -= canvas.offsetLeft;
+		y -= canvas.offsetTop;
+
+		var clickLocation =
+				[
+					Math.floor(x),
+					Math.floor(y)
+				];
+
+		var dx = chicken.x +32 - clickLocation[0];
+		var dy = chicken.y +32 - clickLocation[1];
+
+		var distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));
+		var angle = Math.atan2(dy, dx)-90;
+
+		ctx.save();
+		ctx.translate(chicken.x, chicken.y);
+		ctx.rotate(angle);
+
+		//chicken.x = clickLocation[0] - 32;
+		//chicken.y = clickLocation[1] - 32;
+
+		console.log("clicked " + clickLocation[0] + ',' + clickLocation[1] + "\nX: " + chicken.x + " Y: " + chicken.y + "\nD1: " + dx + "\nD2: " + dy + "\nDistance: " + distance + "\nAngle: " + Math.atan2(dy, dx) * 180 / Math.PI);
+
+		for (i = 0; i < distance; i++)
+		{
+			ctx.save();
+			ctx.translate(0, -i);
+			
+			ctx.drawImage(image,
+					chicken.srcX, //srcX
+					chicken.srcY, // srcY
+					chicken.srcW, chicken.srcH,
+					0, 0,
+					chicken.w, chicken.h);
+
+			ctx.restore();
+		}
+		ctx.restore();
+	}
 }
+
+
