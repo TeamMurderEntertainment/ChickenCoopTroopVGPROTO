@@ -51,6 +51,7 @@ function startLogic()
 	var scoreElement;
 	var timeElement;
 	var levelElement;
+	var endElement;
 
 	var gameTimeInterval;
 
@@ -162,24 +163,42 @@ function startLogic()
 	function initGameUI()
 	{
 		score = 0;
-		timeInSeconds = 60;
+		timeInSeconds = 10;
 		level = 1;
 
 		timeElement = new MessageObject();
 		timeElement.text = timeInSeconds + " seconds left";
+		timeElement.x = canvas.offsetLeft + 15;
+		timeElement.y = canvas.offsetTop + 30;
 		messages.push(timeElement);
 
 		levelElement = new MessageObject();
 		levelElement.text = "level: " + level;
+		levelElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 4);
+		levelElement.y = canvas.offsetTop + 30;
 		messages.push(levelElement);
 
 		scoreElement = new MessageObject();
 		scoreElement.text = score + " worm smears";
+		scoreElement.x = canvas.offsetLeft + canvas.width - 200;
+		scoreElement.y = canvas.offsetTop + 30;
 		messages.push(scoreElement);
+
+		endElement = new MessageObject();
+		endElement.text = timeInSeconds + " seconds left, Time up";
+		endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 4);
+		endElement.y = canvas.offsetTop + (canvas.height / 2) - 10;
+		endElement.visible = false;
+		messages.push(endElement);
 
 		gameTimeInterval = window.setInterval(function ()
 		{
 			timeInSeconds -= 1;
+			if (timeInSeconds == 0)
+			{
+				clearInterval(gameTimeInterval);
+				gameState = GAMEEND;
+			}
 		}, 1000);
 
 
@@ -187,7 +206,7 @@ function startLogic()
 
 	function endGame()
 	{
-		clearInterval(gameTimeInterval);
+		endElement.visible = true;
 	}
 
 	var spriteID = function (id, rotation)
@@ -392,16 +411,19 @@ function startLogic()
 
 	function renderScoreUI()
 	{
-		for ( var i = 0; i < messages.length; i ++ )
+		timeElement.text = timeInSeconds + " seconds left";
+		scoreElement.text = score + " worm smears";
+		
+		for (var i = 0; i < messages.length; i++)
 		{
 			var message = messages[i];
-			
-			if ( message.visible )
+
+			if (message.visible)
 			{
-				
+
 				ctx.font = message.font;
 				ctx.fillStyle = message.fontStyle;
-				ctx.textBaseLine = message.textBaseLine;
+				ctx.textBaseLine = message.textBaseline;
 
 				ctx.fillText(message.text, message.x, message.y);
 			}
