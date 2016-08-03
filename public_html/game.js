@@ -44,8 +44,19 @@ function startLogic()
 	var GAMEEND = 2;
 	var gameState = MENU;
 
+	var score;
+	var timeInSeconds;
+	var level;
+
+	var scoreElement;
+	var timeElement;
+	var levelElement;
+
+	var gameTimeInterval;
+
 	var sprites = [];
 	var spriteTiles = [[]];
+	var messages = [];
 
 	var background = new SpriteObject();
 	background.srcY = 192;
@@ -121,7 +132,7 @@ function startLogic()
 
 		//draw menu stuff
 		//renderMenu();
-		
+
 		//draw map
 		renderMap();
 
@@ -131,6 +142,7 @@ function startLogic()
 		drawChicken();
 		console.log("Frame 1up" + "\nChicken movement from last location: " + chicken.distance);
 
+		renderScoreUI();
 	}
 
 	function showMenu()
@@ -140,13 +152,42 @@ function startLogic()
 
 	function playGame()
 	{
+		initGameUI();
+
+
 		genMap();
 		setInterval(render, 30);
 	}
 
+	function initGameUI()
+	{
+		score = 0;
+		timeInSeconds = 60;
+		level = 1;
+
+		timeElement = new MessageObject();
+		timeElement.text = timeInSeconds + " seconds left";
+		messages.push(timeElement);
+
+		levelElement = new MessageObject();
+		levelElement.text = "level: " + level;
+		messages.push(levelElement);
+
+		scoreElement = new MessageObject();
+		scoreElement.text = score + " worm smears";
+		messages.push(scoreElement);
+
+		gameTimeInterval = window.setInterval(function ()
+		{
+			timeInSeconds -= 1;
+		}, 1000);
+
+
+	}
+
 	function endGame()
 	{
-
+		clearInterval(gameTimeInterval);
 	}
 
 	var spriteID = function (id, rotation)
@@ -317,15 +358,18 @@ function startLogic()
 				{
 					tempX = 0;
 					tempY = 0;
-				} else if (rot == 1)
+				}
+				else if (rot == 1)
 				{
 					tempX = 0;
 					tempY = -1;
-				} else if (rot == 2)
+				}
+				else if (rot == 2)
 				{
 					tempX = -1;
 					tempY = -1;
-				} else if (rot == 3)
+				}
+				else if (rot == 3)
 				{
 					tempX = -1;
 					tempY = 0;
@@ -342,6 +386,24 @@ function startLogic()
 						0 + (tempX * 32), 0 + (tempY * 32),
 						32, 32);
 				ctx.restore();
+			}
+		}
+	}
+
+	function renderScoreUI()
+	{
+		for ( var i = 0; i < messages.length; i ++ )
+		{
+			var message = messages[i];
+			
+			if ( message.visible )
+			{
+				
+				ctx.font = message.font;
+				ctx.fillStyle = message.fontStyle;
+				ctx.textBaseLine = message.textBaseLine;
+
+				ctx.fillText(message.text, message.x, message.y);
 			}
 		}
 	}
@@ -363,6 +425,6 @@ function startLogic()
 			}
 		}
 	}
-	
+
 	update();
 }
