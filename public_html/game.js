@@ -317,33 +317,33 @@ function startLogic()
 		var distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));
 		chicken.r = Math.degrees(Math.atan2(dy, dx));
 
-		ctx.fillRect(0,384,canvas.width,1);
-		ctx.fillRect(512,0,1,canvas.height);
+		ctx.fillRect(0,384,canvas.width,1); //
+		ctx.fillRect(512,0,1,canvas.height);//
 
-		ctx.save();
+		ctx.save();//
 		
-		ctx.translate(chicken.x+32, chicken.y+32);
+		ctx.translate(chicken.x+32, chicken.y+32);//
 		
-		ctx.rotate(Math.radians(chicken.r-90));
-		ctx.translate(-32,-32);
+		ctx.rotate(Math.radians(chicken.r-90));//
+		ctx.translate(-32,-32);//
 
 		console.log("clicked " + clickLocation[0] + ',' + clickLocation[1] + "\nX: " + chicken.x + " Y: " + chicken.y + "\nD1: " + dx + "\nD2: " + dy + "\nDistance: " + distance + "\nAngle: " + chicken.r);
 
 		for (i = 0; i < distance; i++)
 		{
-			ctx.save();
-			ctx.translate(0, -i);
+			ctx.save();//
+			ctx.translate(0, -i);//
 			
-			ctx.drawImage(image,
-					chicken.srcX, //srcX
-					chicken.srcY, // srcY
-					chicken.srcW, chicken.srcH,
-					0, 0,
-					chicken.w, chicken.h);
+			ctx.drawImage(image,					//
+					chicken.srcX, //srcX			//
+					chicken.srcY, // srcY			//
+					chicken.srcW, chicken.srcH,		//
+					0, 0,							//
+					chicken.w, chicken.h);			//
 
-			ctx.restore();
+			ctx.restore();//
 		}
-		ctx.restore();
+		ctx.restore();//
 		
 		chicken.x = clickLocation[0]-32;
 		chicken.y = clickLocation[1]-32;
