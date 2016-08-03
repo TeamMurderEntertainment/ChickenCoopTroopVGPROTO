@@ -79,7 +79,7 @@ function startLogic()
 	chicken.h = 64;
 	chicken.x = canvas.width / 2 - chicken.halfWidth();
 	chicken.y = canvas.height / 2 - chicken.halfHeight();
-	chicken.speed = 5;
+	chicken.r = 0;
 	chicken.visible = false;
 	sprites.push(chicken);
 
@@ -310,21 +310,24 @@ function startLogic()
 					Math.floor(x),
 					Math.floor(y)
 				];
-
-		var dx = chicken.x +32 - clickLocation[0];
-		var dy = chicken.y +32 - clickLocation[1];
+				
+		var dx = chicken.x+32 - clickLocation[0];
+		var dy = chicken.y+32 - clickLocation[1];
 
 		var distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));
-		var angle = Math.atan2(dy, dx)-90;
+		chicken.r = Math.degrees(Math.atan2(dy, dx));
+
+		ctx.fillRect(0,384,canvas.width,1);
+		ctx.fillRect(512,0,1,canvas.height);
 
 		ctx.save();
-		ctx.translate(chicken.x, chicken.y);
-		ctx.rotate(angle);
+		
+		ctx.translate(chicken.x+32, chicken.y+32);
+		
+		ctx.rotate(Math.radians(chicken.r-90));
+		ctx.translate(-32,-32);
 
-		//chicken.x = clickLocation[0] - 32;
-		//chicken.y = clickLocation[1] - 32;
-
-		console.log("clicked " + clickLocation[0] + ',' + clickLocation[1] + "\nX: " + chicken.x + " Y: " + chicken.y + "\nD1: " + dx + "\nD2: " + dy + "\nDistance: " + distance + "\nAngle: " + Math.atan2(dy, dx) * 180 / Math.PI);
+		console.log("clicked " + clickLocation[0] + ',' + clickLocation[1] + "\nX: " + chicken.x + " Y: " + chicken.y + "\nD1: " + dx + "\nD2: " + dy + "\nDistance: " + distance + "\nAngle: " + chicken.r);
 
 		for (i = 0; i < distance; i++)
 		{
@@ -341,7 +344,8 @@ function startLogic()
 			ctx.restore();
 		}
 		ctx.restore();
+		
+		chicken.x = clickLocation[0]-32;
+		chicken.y = clickLocation[1]-32;
 	}
 }
-
-
