@@ -35,9 +35,6 @@ function startLogic()
 			image.removeEventListener("load", loadHandler);
 
 			chicken_walk.removeEventListener("canplaythrough", loadHandler);
-
-			genMap();
-			update();
 		}
 	}
 
@@ -79,7 +76,10 @@ function startLogic()
 	chicken.h = 64;
 	chicken.x = canvas.width / 2 - chicken.halfWidth();
 	chicken.y = canvas.height / 2 - chicken.halfHeight();
+	chicken.x2 = chicken.x;
+	chicken.y2 = chicken.y;
 	chicken.r = 0;
+	chicken.distance = 0;
 	chicken.visible = false;
 	sprites.push(chicken);
 
@@ -91,11 +91,12 @@ function startLogic()
 	bgTile.visible = true;
 	sprites.push(bgTile);
 
-
-
 	function update()
 	{
 		//window.requestAnimationFrame( update );
+
+		gameState = PLAYING;//HARDCODING!
+
 		switch (gameState)
 		{
 			case MENU:
@@ -111,74 +112,25 @@ function startLogic()
 				console.log("Welp, shit went pear shaped on us....");
 		}
 
-		render();
+
 	}
 
 	function render()
 	{
-		//ctx.clearRect( 0, 0, canvas.width, canvas.height );
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		for (var i = 0; i < sprites.length; i++)
-		{
-			var sprite = sprites[i];
-			if (sprite.visible)
-			{
+		//draw menu stuff
+		//renderMenu();
+		
+		//draw map
+		renderMap();
 
-				ctx.drawImage(image,
-						sprite.srcX, sprite.srcY,
-						sprite.srcW, sprite.srcH,
-						Math.floor(sprite.x), Math.floor(sprite.y),
-						sprite.w, sprite.h
-						);
-			}
-		}
-
-		for (var x = 0; x < tileCountX; x++)
-		{
-			for (var y = 0; y < tileCountY; y++)
-			{
-				ctx.save();
-				var tempX = 0;
-				var tempY = 0;
-				var rot = spriteTiles[x][y].rotation;
-
-				if (rot == 0)
-				{
-					tempX = 0;
-					tempY = 0;
-				} else if (rot == 1)
-				{
-					tempX = 0;
-					tempY = -1;
-				} else if (rot == 2)
-				{
-					tempX = -1;
-					tempY = -1;
-				} else if (rot == 3)
-				{
-					tempX = -1;
-					tempY = 0;
-				}
-
-
-				ctx.translate((x * bgTile.w), (y * bgTile.h));
-
-//				console.log(spriteTiles[x][y].id, spriteTiles[x][y].rotation * 90);
-//				console.log(x * bgTile.w, y * bgTile.h);
-//				console.log("-------------------------------");
-
-				ctx.rotate(((90 * spriteTiles[x][y].rotation) * Math.PI) / 180);
-				ctx.drawImage(image,
-						spriteTiles[x][y].id * 32, //srcX
-						0, // srcY
-						32, 32,
-						0 + (tempX * 32), 0 + (tempY * 32),
-						32, 32);
-				ctx.restore();
-			}
-		}
-		//chicken here
+		//chicken info click listener here
 		canvas.addEventListener("click", updateChicken);
+		//draw chicken
+		drawChicken();
+		console.log("Frame 1up" + "\nChicken movement from last location: " + chicken.distance);
+
 	}
 
 	function showMenu()
@@ -188,7 +140,8 @@ function startLogic()
 
 	function playGame()
 	{
-
+		genMap();
+		setInterval(render, 30);
 	}
 
 	function endGame()
@@ -290,11 +243,13 @@ function startLogic()
 		}
 	}
 
-
-
-	function updateChicken(e) {
+	function updateChicken(e)
+	{
 		var x;
 		var y;
+
+		chicken.x = chicken.x2;
+		chicken.y = chicken.y2;
 
 		if (e.pageX != undefined && e.pageY != undefined)
 		{
@@ -310,42 +265,104 @@ function startLogic()
 					Math.floor(x),
 					Math.floor(y)
 				];
-				
-		var dx = chicken.x+32 - clickLocation[0];
-		var dy = chicken.y+32 - clickLocation[1];
 
-		var distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));
+		var dx = chicken.x + 32 - clickLocation[0];
+		var dy = chicken.y + 32 - clickLocation[1];
+
+		chicken.distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));
 		chicken.r = Math.degrees(Math.atan2(dy, dx));
 
-		ctx.fillRect(0,384,canvas.width,1); //
-		ctx.fillRect(512,0,1,canvas.height);//
-
-		ctx.save();//
-		
-		ctx.translate(chicken.x+32, chicken.y+32);//
-		
-		ctx.rotate(Math.radians(chicken.r-90));//
-		ctx.translate(-32,-32);//
-
-		console.log("clicked " + clickLocation[0] + ',' + clickLocation[1] + "\nX: " + chicken.x + " Y: " + chicken.y + "\nD1: " + dx + "\nD2: " + dy + "\nDistance: " + distance + "\nAngle: " + chicken.r);
-
-		for (i = 0; i < distance; i++)
-		{
-			ctx.save();//
-			ctx.translate(0, -i);//
-			
-			ctx.drawImage(image,					//
-					chicken.srcX, //srcX			//
-					chicken.srcY, // srcY			//
-					chicken.srcW, chicken.srcH,		//
-					0, 0,							//
-					chicken.w, chicken.h);			//
-
-			ctx.restore();//
-		}
-		ctx.restore();//
-		
-		chicken.x = clickLocation[0]-32;
-		chicken.y = clickLocation[1]-32;
+		chicken.x2 = clickLocation[0] - 32;
+		chicken.y2 = clickLocation[1] - 32;
 	}
+
+	function drawChicken()
+	{
+		ctx.save();
+		ctx.translate(chicken.x + 32, chicken.y + 32);
+
+		ctx.rotate(Math.radians(chicken.r - 90));
+		ctx.translate(-32, -32);
+
+		for (i = 0; i < chicken.distance; i++)
+		{
+			ctx.save();
+			ctx.translate(0, -i);
+
+			ctx.drawImage(image,
+					chicken.srcX, //srcX			
+					chicken.srcY, // srcY			
+					chicken.srcW, chicken.srcH,
+					0, 0,
+					chicken.w, chicken.h);
+
+			ctx.restore();
+
+		}
+		ctx.restore();
+	}
+
+	function renderMap()
+	{
+		for (var x = 0; x < tileCountX; x++)
+		{
+			for (var y = 0; y < tileCountY; y++)
+			{
+
+				var tempX = 0;
+				var tempY = 0;
+				var rot = spriteTiles[x][y].rotation;
+
+				if (rot == 0)
+				{
+					tempX = 0;
+					tempY = 0;
+				} else if (rot == 1)
+				{
+					tempX = 0;
+					tempY = -1;
+				} else if (rot == 2)
+				{
+					tempX = -1;
+					tempY = -1;
+				} else if (rot == 3)
+				{
+					tempX = -1;
+					tempY = 0;
+				}
+
+				ctx.save();
+				ctx.translate((x * bgTile.w), (y * bgTile.h));
+
+				ctx.rotate(((90 * spriteTiles[x][y].rotation) * Math.PI) / 180);
+				ctx.drawImage(image,
+						spriteTiles[x][y].id * 32, //srcX
+						0, // srcY
+						32, 32,
+						0 + (tempX * 32), 0 + (tempY * 32),
+						32, 32);
+				ctx.restore();
+			}
+		}
+	}
+
+	function renderMenu()
+	{
+		for (var i = 0; i < sprites.length; i++)
+		{
+			var sprite = sprites[i];
+			if (sprite.visible)
+			{
+
+				ctx.drawImage(image,
+						sprite.srcX, sprite.srcY,
+						sprite.srcW, sprite.srcH,
+						Math.floor(sprite.x), Math.floor(sprite.y),
+						sprite.w, sprite.h
+						);
+			}
+		}
+	}
+	
+	update();
 }
