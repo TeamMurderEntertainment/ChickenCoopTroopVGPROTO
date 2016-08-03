@@ -44,8 +44,20 @@ function startLogic()
 	var GAMEEND = 2;
 	var gameState = MENU;
 
+	var score;
+	var timeInSeconds;
+	var level;
+
+	var scoreElement;
+	var timeElement;
+	var levelElement;
+	var endElement;
+
+	var gameTimeInterval;
+
 	var sprites = [];
 	var spriteTiles = [[]];
+	var messages = [];
 
 	var background = new SpriteObject();
 	background.srcY = 192;
@@ -121,7 +133,7 @@ function startLogic()
 
 		//draw menu stuff
 		//renderMenu();
-		
+
 		//draw map
 		renderMap();
 
@@ -131,6 +143,7 @@ function startLogic()
 		drawChicken();
 		console.log("Frame 1up" + "\nChicken movement from last location: " + chicken.distance);
 
+		renderScoreUI();
 	}
 
 	function showMenu()
@@ -140,13 +153,60 @@ function startLogic()
 
 	function playGame()
 	{
+		initGameUI();
+
+
 		genMap();
 		setInterval(render, 30);
 	}
 
+	function initGameUI()
+	{
+		score = 0;
+		timeInSeconds = 10;
+		level = 1;
+
+		timeElement = new MessageObject();
+		timeElement.text = timeInSeconds + " seconds left";
+		timeElement.x = canvas.offsetLeft + 15;
+		timeElement.y = canvas.offsetTop + 30;
+		messages.push(timeElement);
+
+		levelElement = new MessageObject();
+		levelElement.text = "level: " + level;
+		levelElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 4);
+		levelElement.y = canvas.offsetTop + 30;
+		messages.push(levelElement);
+
+		scoreElement = new MessageObject();
+		scoreElement.text = score + " worm smears";
+		scoreElement.x = canvas.offsetLeft + canvas.width - 200;
+		scoreElement.y = canvas.offsetTop + 30;
+		messages.push(scoreElement);
+
+		endElement = new MessageObject();
+		endElement.text = timeInSeconds + " seconds left, Time up";
+		endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 4);
+		endElement.y = canvas.offsetTop + (canvas.height / 2) - 10;
+		endElement.visible = false;
+		messages.push(endElement);
+
+		gameTimeInterval = window.setInterval(function ()
+		{
+			timeInSeconds -= 1;
+			if (timeInSeconds == 0)
+			{
+				clearInterval(gameTimeInterval);
+				gameState = GAMEEND;
+			}
+		}, 1000);
+
+
+	}
+
 	function endGame()
 	{
-
+		endElement.visible = true;
 	}
 
 	var spriteID = function (id, rotation)
@@ -317,15 +377,18 @@ function startLogic()
 				{
 					tempX = 0;
 					tempY = 0;
-				} else if (rot == 1)
+				}
+				else if (rot == 1)
 				{
 					tempX = 0;
 					tempY = -1;
-				} else if (rot == 2)
+				}
+				else if (rot == 2)
 				{
 					tempX = -1;
 					tempY = -1;
-				} else if (rot == 3)
+				}
+				else if (rot == 3)
 				{
 					tempX = -1;
 					tempY = 0;
@@ -342,6 +405,27 @@ function startLogic()
 						0 + (tempX * 32), 0 + (tempY * 32),
 						32, 32);
 				ctx.restore();
+			}
+		}
+	}
+
+	function renderScoreUI()
+	{
+		timeElement.text = timeInSeconds + " seconds left";
+		scoreElement.text = score + " worm smears";
+		
+		for (var i = 0; i < messages.length; i++)
+		{
+			var message = messages[i];
+
+			if (message.visible)
+			{
+
+				ctx.font = message.font;
+				ctx.fillStyle = message.fontStyle;
+				ctx.textBaseLine = message.textBaseline;
+
+				ctx.fillText(message.text, message.x, message.y);
 			}
 		}
 	}
@@ -363,6 +447,6 @@ function startLogic()
 			}
 		}
 	}
-	
+
 	update();
 }
