@@ -313,17 +313,17 @@ function startLogic()
 
 //		for (i = 0; i < chicken.distance; i++)
 //		{
-			ctx.save();
-			ctx.translate(0, 0);
+		ctx.save();
+		ctx.translate(0, 0);
 
-			ctx.drawImage(image,
-					chicken.srcX, //srcX			
-					chicken.srcY, // srcY			
-					chicken.srcW, chicken.srcH,
-					0, 0,
-					chicken.w, chicken.h);
+		ctx.drawImage(image,
+				chicken.srcX, //srcX			
+				chicken.srcY, // srcY			
+				chicken.srcW, chicken.srcH,
+				0, 0,
+				chicken.w, chicken.h);
 
-			ctx.restore();
+		ctx.restore();
 //		}
 		ctx.restore();
 
