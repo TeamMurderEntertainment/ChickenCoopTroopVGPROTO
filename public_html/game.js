@@ -311,8 +311,8 @@ function startLogic()
 		ctx.rotate(Math.radians(chicken.r - 90));
 		ctx.translate(-chicken.halfWidth(), -chicken.halfHeight());
 
-//		for (i = 0; i < chicken.distance; i++)
-//		{
+		//for (i = 0; i < chicken.distance; i++)
+		//{
 		ctx.save();
 		ctx.translate(0, 0);
 
@@ -324,6 +324,8 @@ function startLogic()
 				chicken.w, chicken.h);
 
 		ctx.restore();
+
+		//}
 //		}
 		ctx.restore();
 
