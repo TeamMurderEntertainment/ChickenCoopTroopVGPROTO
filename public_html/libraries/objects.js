@@ -66,3 +66,14 @@ var MessageObject = function ()
 	this.textBaseline = "top";
 	this.text = "message";
 };
+
+var spriteID = function (id, rotation)
+	{
+		if (id < 0 || id > 5)
+			console.log("Invalid ID : " + id);
+		if (rotation < 0 || rotation > 3)
+			console.log("Invalid Rotation : " + rotation);
+
+		this.id = id;
+		this.rotation = rotation;
+	};
