@@ -35,14 +35,46 @@ function startLogic()
 			image.removeEventListener("load", loadHandler);
 
 			chicken_walk.removeEventListener("canplaythrough", loadHandler);
+
+			canvas.addEventListener("mousedown", mouseLocation);
+			gameState = MENU;
+			console.log(gameState);
+
+			timeElement = new MessageObject();
+			timeElement.text = timeInSeconds + " seconds left";
+			timeElement.x = canvas.offsetLeft + 15;
+			timeElement.y = canvas.offsetTop + 30;
+			timeElement.visible = false;
+			messages.push(timeElement);
+
+			levelElement = new MessageObject();
+			levelElement.text = "level: " + level;
+			levelElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 4);
+			levelElement.y = canvas.offsetTop + 30;
+			levelElement.visible = false;
+			messages.push(levelElement);
+
+			scoreElement = new MessageObject();
+			scoreElement.text = score + " worm smears";
+			scoreElement.x = canvas.offsetLeft + canvas.width - 200;
+			scoreElement.y = canvas.offsetTop + 30;
+			scoreElement.visible = false;
+			messages.push(scoreElement);
+
+			endElement = new MessageObject();
+			endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 8);
+			endElement.y = canvas.offsetTop + (canvas.height / 2) - 10;
+			endElement.visible = false;
+			messages.push(endElement);
 		}
 	}
 
 	// Gamestates
-	var MENU = 0;
-	var PLAYING = 1;
-	var GAMEEND = 2;
-	var gameState = MENU;
+	var LOADING = 0;
+	var MENU = 1;
+	var PLAYING = 2;
+	var GAMEEND = 3;
+	var gameState = LOADING;
 
 	var score;
 	var timeInSeconds;
@@ -61,60 +93,92 @@ function startLogic()
 
 	var clickLocation = [];
 
+	var newGame = true;
+
 	var background = new SpriteObject();
-	background.srcY = 192;
-	background.srcW = 1024;
-	background.srcH = 768;
-	background.w = 1024;
-	background.h = 768;
-	background.visible = true;
-	sprites.push(background);
+	{
+		background.srcY = 192;
+		background.srcW = 1024;
+		background.srcH = 768;
+		background.w = 1024;
+		background.h = 768;
+		background.visible = true;
+		sprites.push(background);
+	}
 
 	var title = new SpriteObject();
-	title.srcX = 192;
-	title.srcW = 512;
-	title.srcH = 192;
-	title.w = 512;
-	title.h = 192;
-	title.x = canvas.width / 2 - title.halfWidth();
-	title.y = 20;
-	title.visible = true;
-	sprites.push(title);
+	{
+		title.srcX = 192;
+		title.srcW = 512;
+		title.srcH = 192;
+		title.w = 512;
+		title.h = 192;
+		title.x = canvas.width / 2 - title.halfWidth();
+		title.y = 20;
+		title.visible = true;
+		sprites.push(title);
+	}
 
 	var chicken = new SpriteObject();
-	chicken.srcX = 32;
-	chicken.srcY = 64;
-	chicken.srcW = 64;
-	chicken.srcH = 64;
-	chicken.w = 64;
-	chicken.h = 64;
-	chicken.x = canvas.width / 2 - chicken.halfWidth();
-	chicken.y = canvas.height / 2 - chicken.halfHeight();
-	chicken.r = 0;
-	chicken.vx = 5;
-	chicken.vy = 5;
-	chicken.distance = 0;
-	chicken.visible = false;
-	sprites.push(chicken);
+	{
+		chicken.srcX = 32;
+		chicken.srcY = 64;
+		chicken.srcW = 64;
+		chicken.srcH = 64;
+		chicken.w = 64;
+		chicken.h = 64;
+		chicken.x = canvas.width / 2 - chicken.halfWidth();
+		chicken.y = canvas.height / 2 - chicken.halfHeight();
+		chicken.r = 0;
+		chicken.vx = 5;
+		chicken.vy = 5;
+		chicken.distance = 0;
+		chicken.visible = false;
+		sprites.push(chicken);
+	}
 
 	var bgTile = new SpriteObject();
-	bgTile.srcW = 32;
-	bgTile.srcH = 32;
-	bgTile.w = 32;
-	bgTile.h = 32;
-	bgTile.visible = true;
-	sprites.push(bgTile);
+	{
+		bgTile.srcX = 32;
+		bgTile.srcY = 0;
+		bgTile.srcW = 32;
+		bgTile.srcH = 32;
+		bgTile.w = 32;
+		bgTile.h = 32;
+		bgTile.visible = true;
+	}
+
+	var btnCap = new SpriteObject();
+	{
+		btnCap.srcX = 0;
+		btnCap.srcY = 64;
+		btnCap.srcW = 8;
+		btnCap.srcH = 32;
+		btnCap.w = 8;
+		btnCap.h = 32;
+		btnCap.visible = false;
+	}
+
+	var btnMid = new SpriteObject();
+	{
+		btnMid.srcX = 9;
+		btnMid.srcY = 64;
+		btnMid.srcW = 1;
+		btnMid.srcH = 32;
+		btnMid.w = 1;
+		btnMid.h = 32;
+		btnMid.visible = false;
+	}
 
 	function update()
 	{
-		//window.requestAnimationFrame( update );
-
-		gameState = PLAYING;//HARDCODING!
+		window.requestAnimationFrame(update);
 
 		switch (gameState)
 		{
+			case LOADING:
+				break;
 			case MENU:
-				showMenu();
 				break;
 			case PLAYING:
 				playGame();
@@ -127,6 +191,8 @@ function startLogic()
 		}
 
 
+		render();
+
 	}
 
 	function render()
@@ -134,64 +200,52 @@ function startLogic()
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		//draw menu stuff
-		//renderMenu();
+		if (gameState == MENU)
+			renderMenu();
 
 		//draw map
-		renderMap();
+		if (gameState == PLAYING || gameState == GAMEEND)
+		{
+			renderMap();
 
-		//chicken info click listener here
-		canvas.addEventListener("mousedown", mouseLocation);
-		//draw chicken
-		drawChicken();
-		console.log("Frame 1up" + "\nChicken movement from last location: " + chicken.distance);
+			//chicken info click listener here
+			canvas.addEventListener("mousedown", mouseLocation);
+			//draw chicken
+			drawChicken();
+			console.log("Frame 1up" + "\nChicken movement from last location: " + chicken.distance);
 
-		renderScoreUI();
+			renderScoreUI();
+		}
 	}
 
-	function showMenu()
-	{
-
-	}
 
 	function playGame()
 	{
-		initGameUI();
 
-
-		genMap();
-		setInterval(render, 30);
+		if (newGame)
+		{
+			initGameUI();
+			genMap();
+			newGame = false;
+		}
 	}
 
 	function initGameUI()
 	{
 		score = 0;
-		timeInSeconds = 10;
+		timeInSeconds = 3;
 		level = 1;
-
-		timeElement = new MessageObject();
-		timeElement.text = timeInSeconds + " seconds left";
-		timeElement.x = canvas.offsetLeft + 15;
-		timeElement.y = canvas.offsetTop + 30;
-		messages.push(timeElement);
-
-		levelElement = new MessageObject();
-		levelElement.text = "level: " + level;
-		levelElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 4);
-		levelElement.y = canvas.offsetTop + 30;
-		messages.push(levelElement);
-
-		scoreElement = new MessageObject();
-		scoreElement.text = score + " worm smears";
-		scoreElement.x = canvas.offsetLeft + canvas.width - 200;
-		scoreElement.y = canvas.offsetTop + 30;
-		messages.push(scoreElement);
-
-		endElement = new MessageObject();
-		endElement.text = timeInSeconds + " seconds left, Time up";
-		endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 4);
-		endElement.y = canvas.offsetTop + (canvas.height / 2) - 10;
+		
 		endElement.visible = false;
-		messages.push(endElement);
+
+			timeElement.text = timeInSeconds + " seconds left";
+			timeElement.visible = true;
+			
+			levelElement.text = "level: " + level;
+			levelElement.visible = true;
+			
+			scoreElement.text = score + " worm smears";
+			scoreElement.visible = true;
 
 		gameTimeInterval = window.setInterval(function ()
 		{
@@ -200,6 +254,9 @@ function startLogic()
 			{
 				clearInterval(gameTimeInterval);
 				gameState = GAMEEND;
+
+				endElement.text = timeInSeconds + " seconds left, times up, you got " + score + " worms killed.";
+				endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 30);
 			}
 		}, 1000);
 
@@ -211,26 +268,17 @@ function startLogic()
 		endElement.visible = true;
 	}
 
-	var spriteID = function (id, rotation)
-	{
-		if (id < 0 || id > 5)
-			console.log("Invalid ID : " + id);
-		if (rotation < 0 || rotation > 3)
-			console.log("Invalid Rotation : " + rotation);
 
-		this.id = id;
-		this.rotation = rotation;
-	};
 
-	// dirt = 0
-	// rock = 1
-	// grass edge = 2
-	// grass corner = 3
-	// fence edge = 4
-	// fence corner = 5
-	// 
-	// rotation is 0-3
-	// 90*rotation clockwise
+// dirt = 0
+// rock = 1
+// grass edge = 2
+// grass corner = 3
+// fence edge = 4
+// fence corner = 5
+// 
+// rotation is 0-3
+// 90*rotation clockwise
 
 	function genMap()
 	{
@@ -307,19 +355,28 @@ function startLogic()
 
 	function mouseLocation(e)
 	{
-		if (event.which == 1)
+		if (gameState == MENU || gameState == GAMEEND)
 		{
-			if (e.pageX != undefined && e.pageY != undefined)
+			newGame = true;
+			gameState = PLAYING;
+		}
+		else if (gameState == PLAYING)
+		{
+
+			if (event.which == 1)
 			{
-				x = e.pageX;
-				y = e.pageY;
+				if (e.pageX != undefined && e.pageY != undefined)
+				{
+					x = e.pageX;
+					y = e.pageY;
+				}
+
+				x -= canvas.offsetLeft;
+				y -= canvas.offsetTop;
+
+				clickLocation = [Math.floor(x), Math.floor(y)];
+				addEventListener("mousemove", mouseMoved);
 			}
-
-			x -= canvas.offsetLeft;
-			y -= canvas.offsetTop;
-
-			clickLocation = [Math.floor(x), Math.floor(y)];
-			addEventListener("mousemove", mouseMoved);
 		}
 	}
 
@@ -336,7 +393,8 @@ function startLogic()
 		if (!buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
-		} else
+		}
+		else
 		{
 			if (e.pageX != undefined && e.pageY != undefined)
 			{
@@ -432,11 +490,10 @@ function startLogic()
 
 				ctx.rotate(((90 * spriteTiles[x][y].rotation) * Math.PI) / 180);
 				ctx.drawImage(image,
-						spriteTiles[x][y].id * 32, //srcX
-						0, // srcY
-						32, 32,
-						0 + (tempX * 32), 0 + (tempY * 32),
-						32, 32);
+						spriteTiles[x][y].id * bgTile.srcX, bgTile.srcY,
+						bgTile.srcW, bgTile.srcH,
+						(tempX * 32), (tempY * 32),
+						bgTile.w, bgTile.h);
 				ctx.restore();
 			}
 		}
@@ -446,7 +503,7 @@ function startLogic()
 	{
 		timeElement.text = timeInSeconds + " seconds left";
 		scoreElement.text = score + " worm smears";
-		
+
 		for (var i = 0; i < messages.length; i++)
 		{
 			var message = messages[i];
