@@ -373,13 +373,13 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 				id = 0;
 
@@ -456,23 +456,20 @@ function startLogic()
 		{
 			newGame = true;
 			gameState = PLAYING;
-		}
-		else if (gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], options))
+		} else if (gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], options))
 		{
 			gameState = OPTIONS;
-		}
-		else if (gameState == OPTIONS)
+		} else if (gameState == OPTIONS)
 		{
 			if (hitTestPoint(clickLocation[0], clickLocation[1], back))
 				gameState = MENU;
 
 			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
-				SFX = ! SFX;
+				SFX = !SFX;
 
 			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
-				music = ! music;
-		}
-		else if (gameState == PLAYING)
+				music = !music;
+		} else if (gameState == PLAYING)
 		{
 			addEventListener("mousemove", mouseMoved);
 
@@ -489,7 +486,7 @@ function startLogic()
 
 	function mouseMoved(e)
 	{
-		if (! buttonPressed(e))
+		if (!buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
 		} else
@@ -530,6 +527,12 @@ function startLogic()
 				newX = Math.cos(Math.radians(entity.r)) * entity.vx;
 				newY = Math.sin(Math.radians(entity.r)) * entity.vy;
 
+				if (entity.distance < 10)
+				{
+					newX = 0;
+					newY = 0;
+				}
+
 				entity.x = entity.x - newX;
 				entity.y = entity.y - newY;
 			}
@@ -544,7 +547,7 @@ function startLogic()
 		ctx.translate(chicken.x + chicken.halfWidth(), chicken.y + chicken.halfHeight());
 
 		ctx.rotate(Math.radians(chicken.r - 90));
-		ctx.translate(- chicken.halfWidth(), - chicken.halfHeight());
+		ctx.translate(-chicken.halfWidth(), -chicken.halfHeight());
 
 		ctx.drawImage(image,
 				chicken.srcX, //srcX			
@@ -558,9 +561,9 @@ function startLogic()
 
 	function renderMap()
 	{
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 
 				var tempX = 0;
@@ -574,16 +577,14 @@ function startLogic()
 				} else if (rot == 1)
 				{
 					tempX = 0;
-					tempY = - 1;
-				}
-				else if (rot == 2)
+					tempY = -1;
+				} else if (rot == 2)
 				{
-					tempX = - 1;
-					tempY = - 1;
-				}
-				else if (rot == 3)
+					tempX = -1;
+					tempY = -1;
+				} else if (rot == 3)
 				{
-					tempX = - 1;
+					tempX = -1;
 					tempY = 0;
 				}
 
@@ -606,7 +607,7 @@ function startLogic()
 		timeElement.text = timeInSeconds + " seconds left";
 		scoreElement.text = score + " worm smears";
 
-		for (var i = 0; i < messages.length; i ++)
+		for (var i = 0; i < messages.length; i++)
 		{
 			var message = messages[i];
 
@@ -630,7 +631,7 @@ function startLogic()
 		btnMsgSFX.visible = false;
 		btnMsgMusic.visible = false;
 
-		for (var i = 0; i < sprites.length; i ++)
+		for (var i = 0; i < sprites.length; i++)
 		{
 
 			var sprite = sprites[i];
@@ -647,7 +648,7 @@ function startLogic()
 		}
 		renderButton(405);
 		renderButton(505);
-		for (var i = 0; i < btnMessages.length; i ++)
+		for (var i = 0; i < btnMessages.length; i++)
 		{
 			var btnMessage = btnMessages[i];
 			if (btnMessage.visible)
@@ -676,7 +677,7 @@ function startLogic()
 		btnMsgSFX.visible = true;
 		btnMsgMusic.visible = true;
 
-		for (var i = 0; i < sprites.length; i ++)
+		for (var i = 0; i < sprites.length; i++)
 		{
 
 			var sprite = sprites[i];
@@ -696,7 +697,7 @@ function startLogic()
 		renderCheckBox((canvas.width / 2) - 20, 430, SFX);
 		renderCheckBox((canvas.width / 2) - 20, 530, music);
 
-		for (var i = 0; i < btnMessages.length; i ++)
+		for (var i = 0; i < btnMessages.length; i++)
 		{
 			var btnMessage = btnMessages[i];
 			if (btnMessage.visible)
