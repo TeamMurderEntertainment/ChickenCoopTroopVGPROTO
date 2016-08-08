@@ -12,8 +12,17 @@ var SpriteObject = function ()
 	this.srcW = 32;
 	this.srcH = 32;
 
+	this.ax = 0; //acceleration on the x-axis
+	this.ay = 0; //acceleration on the y-axis
 	this.vx = 0;
 	this.vy = 0;
+	
+	this.friction = 0.96;
+	this.bounce = -0.7;
+	this.gravity = 0.3;
+	
+	this.jumpForce = -10;
+	this.isOnGround = undefined;
 
 	this.visible = true;
 
@@ -36,7 +45,7 @@ var SpriteObject = function ()
 	{
 		return this.y + this.h;
 	};
-	
+
 	this.center = function ()
 	{
 		return {
@@ -44,19 +53,19 @@ var SpriteObject = function ()
 			y: this.y + (this.h / 2)
 		};
 	};
-	
+
 	this.halfWidth = function ()
 	{
 		return this.w / 2;
 	};
-	
+
 	this.halfHeight = function ()
 	{
 		return this.h / 2;
 	};
 };
 
-var MessageObject = function () 
+var MessageObject = function ()
 {
 	this.x = 0;
 	this.y = 0;
@@ -68,12 +77,12 @@ var MessageObject = function ()
 };
 
 var spriteID = function (id, rotation)
-	{
-		if (id < 0 || id > 5)
-			console.log("Invalid ID : " + id);
-		if (rotation < 0 || rotation > 3)
-			console.log("Invalid Rotation : " + rotation);
+{
+	if (id < 0 || id > 5)
+		console.log("Invalid ID : " + id);
+	if (rotation < 0 || rotation > 3)
+		console.log("Invalid Rotation : " + rotation);
 
-		this.id = id;
-		this.rotation = rotation;
-	};
+	this.id = id;
+	this.rotation = rotation;
+};
