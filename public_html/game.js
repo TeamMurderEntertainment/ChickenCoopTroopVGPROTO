@@ -90,6 +90,7 @@ function startLogic()
 	var sprites = [];
 	var spriteTiles = [[]];
 	var messages = [];
+	var btnMessages = [];
 
 	var clickLocation = [];
 
@@ -154,8 +155,8 @@ function startLogic()
 		btnCap.srcY = 64;
 		btnCap.srcW = 8;
 		btnCap.srcH = 32;
-		btnCap.w = 8;
-		btnCap.h = 32;
+		btnCap.w = 16;
+		btnCap.h = 64;
 		btnCap.visible = false;
 	}
 
@@ -165,9 +166,29 @@ function startLogic()
 		btnMid.srcY = 64;
 		btnMid.srcW = 1;
 		btnMid.srcH = 32;
-		btnMid.w = 1;
-		btnMid.h = 32;
+		btnMid.w = 2;
+		btnMid.h = 64;
 		btnMid.visible = false;
+	}
+
+	var btnMsgPlay = new MessageObject();
+	{
+		btnMsgPlay.text = "PLAY";
+		btnMsgPlay.font = "normal bold 30px komika";
+		btnMsgPlay.fontStyle = "red";
+		btnMsgPlay.x = (canvas.width / 2) - (btnMsgPlay.text.length * 7);
+		btnMsgPlay.y = 450;
+		btnMessages.push(btnMsgPlay);
+	}
+
+	var btnMsgOptions = new MessageObject();
+	{
+		btnMsgOptions.text = "OPTIONS";
+		btnMsgOptions.font = "normal bold 30px komika";
+		btnMsgOptions.fontStyle = "red";
+		btnMsgOptions.x = (canvas.width / 2) - (btnMsgOptions.text.length * 7);
+		btnMsgOptions.y = 550;
+		btnMessages.push(btnMsgOptions);
 	}
 
 	function update()
@@ -235,17 +256,17 @@ function startLogic()
 		score = 0;
 		timeInSeconds = 3;
 		level = 1;
-		
+
 		endElement.visible = false;
 
-			timeElement.text = timeInSeconds + " seconds left";
-			timeElement.visible = true;
-			
-			levelElement.text = "level: " + level;
-			levelElement.visible = true;
-			
-			scoreElement.text = score + " worm smears";
-			scoreElement.visible = true;
+		timeElement.text = timeInSeconds + " seconds left";
+		timeElement.visible = true;
+
+		levelElement.text = "level: " + level;
+		levelElement.visible = true;
+
+		scoreElement.text = score + " worm smears";
+		scoreElement.visible = true;
 
 		gameTimeInterval = window.setInterval(function ()
 		{
@@ -270,15 +291,15 @@ function startLogic()
 
 
 
-// dirt = 0
-// rock = 1
-// grass edge = 2
-// grass corner = 3
-// fence edge = 4
-// fence corner = 5
-// 
-// rotation is 0-3
-// 90*rotation clockwise
+	// dirt = 0
+	// rock = 1
+	// grass edge = 2
+	// grass corner = 3
+	// fence edge = 4
+	// fence corner = 5
+	// 
+	// rotation is 0-3
+	// 90*rotation clockwise
 
 	function genMap()
 	{
@@ -291,13 +312,13 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for (var x = 0; x < tileCountX; x++)
+		for (var x = 0; x < tileCountX; x ++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for (var y = 0; y < tileCountY; y++)
+			for (var y = 0; y < tileCountY; y ++)
 			{
 				id = 0;
 
@@ -390,7 +411,7 @@ function startLogic()
 
 	function mouseMoved(e)
 	{
-		if (!buttonPressed(e))
+		if (! buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
 		}
@@ -429,7 +450,7 @@ function startLogic()
 		ctx.translate(chicken.x + chicken.halfWidth(), chicken.y + chicken.halfHeight());
 
 		ctx.rotate(Math.radians(chicken.r - 90));
-		ctx.translate(-chicken.halfWidth(), -chicken.halfHeight());
+		ctx.translate(- chicken.halfWidth(), - chicken.halfHeight());
 
 		//for (i = 0; i < chicken.distance; i++)
 		//{
@@ -455,9 +476,9 @@ function startLogic()
 
 	function renderMap()
 	{
-		for (var x = 0; x < tileCountX; x++)
+		for (var x = 0; x < tileCountX; x ++)
 		{
-			for (var y = 0; y < tileCountY; y++)
+			for (var y = 0; y < tileCountY; y ++)
 			{
 
 				var tempX = 0;
@@ -472,16 +493,16 @@ function startLogic()
 				else if (rot == 1)
 				{
 					tempX = 0;
-					tempY = -1;
+					tempY = - 1;
 				}
 				else if (rot == 2)
 				{
-					tempX = -1;
-					tempY = -1;
+					tempX = - 1;
+					tempY = - 1;
 				}
 				else if (rot == 3)
 				{
-					tempX = -1;
+					tempX = - 1;
 					tempY = 0;
 				}
 
@@ -504,7 +525,7 @@ function startLogic()
 		timeElement.text = timeInSeconds + " seconds left";
 		scoreElement.text = score + " worm smears";
 
-		for (var i = 0; i < messages.length; i++)
+		for (var i = 0; i < messages.length; i ++)
 		{
 			var message = messages[i];
 
@@ -522,8 +543,11 @@ function startLogic()
 
 	function renderMenu()
 	{
-		for (var i = 0; i < sprites.length; i++)
+		for (var i = 0; i < sprites.length; i ++)
 		{
+
+			renderButton(405);
+			renderButton(505);
 			var sprite = sprites[i];
 			if (sprite.visible)
 			{
@@ -536,6 +560,57 @@ function startLogic()
 						);
 			}
 		}
+
+		for (var i = 0; i < btnMessages.length; i ++)
+		{
+			var btnMessage = btnMessages[i];
+			if (btnMessage.visible)
+			{
+				ctx.font = btnMessage.font;
+				ctx.fillStyle = btnMessage.fontStyle;
+				ctx.textBaseLine = btnMessage.textBaseline;
+
+				ctx.fillText(btnMessage.text, btnMessage.x, btnMessage.y);
+			}
+		}
+	}
+
+	function renderButton(yLocation)
+	{
+		var xSize = 100;
+		//var xStart = ((canvas.width / 2) - (xSize / 2), yLocation);
+		ctx.save();
+
+		ctx.translate((canvas.width / 2) - (xSize), yLocation);
+		ctx.drawImage(image,
+				btnCap.srcX, btnCap.srcY,
+				btnCap.srcW, btnCap.srcH,
+				0, 0,
+				btnCap.w, btnCap.h
+				);
+
+			ctx.translate(16, 0);
+		for (var i = 0; i < xSize; i += 1)
+		{
+			ctx.drawImage(image,
+					btnMid.srcX, btnMid.srcY,
+					btnMid.srcW, btnMid.srcH,
+					0, 0,
+					btnMid.w, btnMid.h
+					);
+			ctx.translate(2, 0);
+		}
+
+		ctx.translate(16, 0);
+		ctx.rotate(Math.radians(180));
+
+		ctx.drawImage(image,
+				btnCap.srcX, btnCap.srcY,
+				btnCap.srcW, btnCap.srcH,
+				0, 0 - 64,
+				btnCap.w, btnCap.h
+				);
+		ctx.restore();
 	}
 
 	update();
