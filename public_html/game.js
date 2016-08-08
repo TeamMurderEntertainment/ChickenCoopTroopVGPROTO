@@ -72,13 +72,17 @@ function startLogic()
 	// Gamestates
 	var LOADING = 0;
 	var MENU = 1;
-	var PLAYING = 2;
-	var GAMEEND = 3;
+	var OPTIONS = 2;
+	var PLAYING = 3;
+	var GAMEEND = 4;
 	var gameState = LOADING;
 
 	var score;
 	var timeInSeconds;
 	var level;
+
+	var music = true;
+	var SFX = true;
 
 	var scoreElement;
 	var timeElement;
@@ -87,6 +91,9 @@ function startLogic()
 
 	var play = new simpleRect((canvas.width / 2) - (100), 405, 232, 64);
 	var options = new simpleRect((canvas.width / 2) - (100), 505, 232, 64);
+	var back = new simpleRect((canvas.width / 2) - (100), 605, 232, 64);
+	var SFXRect = new simpleRect((canvas.width / 2) - 20, 430, 16, 16);
+	var musicRect = new simpleRect((canvas.width / 2) - 20, 530, 16, 16);
 
 	var gameTimeInterval;
 
@@ -174,6 +181,19 @@ function startLogic()
 		btnMid.visible = false;
 	}
 
+	var chkBox = new SpriteObject();
+	{
+		chkBox.srcX = 16;
+		chkBox.srcY = 64;
+		chkBox.srcW = 16;
+		chkBox.srcH = 16;
+		chkBox.w = 16;
+		chkBox.h = 16;
+		chkBox.visible = true;
+	}
+
+
+
 	var btnMsgPlay = new MessageObject();
 	{
 		btnMsgPlay.text = "PLAY";
@@ -181,6 +201,7 @@ function startLogic()
 		btnMsgPlay.fontStyle = "red";
 		btnMsgPlay.x = (canvas.width / 2) - (btnMsgPlay.text.length * 7);
 		btnMsgPlay.y = 450;
+		btnMsgPlay.visible = false;
 		btnMessages.push(btnMsgPlay);
 	}
 
@@ -191,7 +212,41 @@ function startLogic()
 		btnMsgOptions.fontStyle = "red";
 		btnMsgOptions.x = (canvas.width / 2) - (btnMsgOptions.text.length * 7);
 		btnMsgOptions.y = 550;
+		btnMsgOptions.visible = false;
 		btnMessages.push(btnMsgOptions);
+	}
+
+	var btnMsgBack = new MessageObject();
+	{
+		btnMsgBack.text = "BACK";
+		btnMsgBack.font = "normal bold 30px komika";
+		btnMsgBack.fontStyle = "red";
+		btnMsgBack.x = (canvas.width / 2) - (btnMsgBack.text.length * 7);
+		btnMsgBack.y = 650;
+		btnMsgBack.visible = false;
+		btnMessages.push(btnMsgBack);
+	}
+
+	var btnMsgSFX = new MessageObject();
+	{
+		btnMsgSFX.text = "SFX";
+		btnMsgSFX.font = "normal bold 30px komika";
+		btnMsgSFX.fontStyle = "red";
+		btnMsgSFX.x = (canvas.width / 2) + 40;
+		btnMsgSFX.y = 450;
+		btnMsgSFX.visible = false;
+		btnMessages.push(btnMsgSFX);
+	}
+
+	var btnMsgMusic = new MessageObject();
+	{
+		btnMsgMusic.text = "Music";
+		btnMsgMusic.font = "normal bold 30px komika";
+		btnMsgMusic.fontStyle = "red";
+		btnMsgMusic.x = (canvas.width / 2) + 40;
+		btnMsgMusic.y = 550;
+		btnMsgMusic.visible = false;
+		btnMessages.push(btnMsgMusic);
 	}
 
 	function update()
@@ -203,6 +258,8 @@ function startLogic()
 			case LOADING:
 				break;
 			case MENU:
+				break;
+			case OPTIONS:
 				break;
 			case PLAYING:
 				playGame();
@@ -226,7 +283,8 @@ function startLogic()
 		//draw menu stuff
 		if (gameState == MENU)
 			renderMenu();
-
+		if (gameState == OPTIONS)
+			renderOptions();
 		//draw map
 		if (gameState == PLAYING || gameState == GAMEEND)
 		{
@@ -394,13 +452,25 @@ function startLogic()
 
 		}
 		console.log(clickLocation[0], clickLocation[1]);
-		if (gameState == MENU || gameState == GAMEEND)
+		if ((gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], play)) || gameState == GAMEEND)
 		{
-			if (hitTestPoint(clickLocation[0], clickLocation[1], play) || gameState == GAMEEND)
-			{
-				newGame = true;
-				gameState = PLAYING;
-			}
+			newGame = true;
+			gameState = PLAYING;
+		}
+		else if (gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], options))
+		{
+			gameState = OPTIONS;
+		}
+		else if (gameState == OPTIONS)
+		{
+			if (hitTestPoint(clickLocation[0], clickLocation[1], back))
+				gameState = MENU;
+
+			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
+				SFX = ! SFX;
+
+			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
+				music = ! music;
 		}
 		else if (gameState == PLAYING)
 		{
@@ -551,11 +621,15 @@ function startLogic()
 
 	function renderMenu()
 	{
+		btnMsgOptions.visible = true;
+		btnMsgPlay.visible = true;
+		btnMsgBack.visible = false;
+		btnMsgSFX.visible = false;
+		btnMsgMusic.visible = false;
+
 		for (var i = 0; i < sprites.length; i ++)
 		{
 
-			renderButton(405);
-			renderButton(505);
 			var sprite = sprites[i];
 			if (sprite.visible)
 			{
@@ -568,7 +642,8 @@ function startLogic()
 						);
 			}
 		}
-
+		renderButton(405);
+		renderButton(505);
 		for (var i = 0; i < btnMessages.length; i ++)
 		{
 			var btnMessage = btnMessages[i];
@@ -582,12 +657,64 @@ function startLogic()
 			}
 		}
 
-		ctx.rect(play.x, play.y,play.w,play.h);
+		ctx.rect(play.x, play.y, play.w, play.h);
 		ctx.stroke();
 
-		ctx.rect(options.x, options.y,options.w,options.h);
+		ctx.rect(options.x, options.y, options.w, options.h);
 		ctx.stroke();
 
+	}
+
+	function renderOptions()
+	{
+		btnMsgBack.visible = true;
+		btnMsgPlay.visible = false;
+		btnMsgOptions.visible = false;
+		btnMsgSFX.visible = true;
+		btnMsgMusic.visible = true;
+
+		for (var i = 0; i < sprites.length; i ++)
+		{
+
+			var sprite = sprites[i];
+			if (sprite.visible)
+			{
+
+				ctx.drawImage(image,
+						sprite.srcX, sprite.srcY,
+						sprite.srcW, sprite.srcH,
+						Math.floor(sprite.x), Math.floor(sprite.y),
+						sprite.w, sprite.h
+						);
+			}
+		}
+		renderButton(605);
+
+		renderCheckBox((canvas.width / 2) - 20, 430, SFX);
+		renderCheckBox((canvas.width / 2) - 20, 530, music);
+
+		for (var i = 0; i < btnMessages.length; i ++)
+		{
+			var btnMessage = btnMessages[i];
+			if (btnMessage.visible)
+			{
+				ctx.font = btnMessage.font;
+				ctx.fillStyle = btnMessage.fontStyle;
+				ctx.textBaseLine = btnMessage.textBaseline;
+
+				ctx.fillText(btnMessage.text, btnMessage.x, btnMessage.y);
+			}
+		}
+	}
+
+	function renderCheckBox(x, y, checked)
+	{
+		ctx.drawImage(image,
+				chkBox.srcX, (checked ? chkBox.srcY + 16 : chkBox.srcY),
+				chkBox.srcW, chkBox.srcH,
+				x, y,
+				chkBox.w, chkBox.h
+				);
 	}
 
 	function renderButton(yLocation)
