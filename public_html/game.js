@@ -130,8 +130,8 @@ function startLogic()
 		chicken.x = canvas.width / 2 - chicken.halfWidth();
 		chicken.y = canvas.height / 2 - chicken.halfHeight();
 		chicken.r = 0;
-		chicken.vx = 5;
-		chicken.vy = 5;
+		chicken.vx = 4;
+		chicken.vy = 4;
 		chicken.distance = 0;
 		chicken.visible = false;
 		sprites.push(chicken);
@@ -210,9 +210,9 @@ function startLogic()
 
 			//chicken info click listener here
 			canvas.addEventListener("mousedown", mouseLocation);
+			canvas.addEventListener("mouseup", mouseReset);
 			//draw chicken
 			drawChicken();
-			console.log("Frame 1up" + "\nChicken movement from last location: " + chicken.distance);
 
 			renderScoreUI();
 		}
@@ -235,17 +235,17 @@ function startLogic()
 		score = 0;
 		timeInSeconds = 3;
 		level = 1;
-		
+
 		endElement.visible = false;
 
-			timeElement.text = timeInSeconds + " seconds left";
-			timeElement.visible = true;
-			
-			levelElement.text = "level: " + level;
-			levelElement.visible = true;
-			
-			scoreElement.text = score + " worm smears";
-			scoreElement.visible = true;
+		timeElement.text = timeInSeconds + " seconds left";
+		timeElement.visible = true;
+
+		levelElement.text = "level: " + level;
+		levelElement.visible = true;
+
+		scoreElement.text = score + " worm smears";
+		scoreElement.visible = true;
 
 		gameTimeInterval = window.setInterval(function ()
 		{
@@ -359,8 +359,7 @@ function startLogic()
 		{
 			newGame = true;
 			gameState = PLAYING;
-		}
-		else if (gameState == PLAYING)
+		} else if (gameState == PLAYING)
 		{
 
 			if (event.which == 1)
@@ -393,8 +392,7 @@ function startLogic()
 		if (!buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
-		}
-		else
+		} else
 		{
 			if (e.pageX != undefined && e.pageY != undefined)
 			{
@@ -409,15 +407,32 @@ function startLogic()
 		}
 	}
 
+	function mouseReset()
+	{
+		clickLocation[0] = undefined;
+		clickLocation[1] = undefined;
+	}
+
 	function entityMove(x, y, entity)
 	{
-		var dx = entity.x + entity.halfWidth() - x;
-		var dy = entity.y + entity.halfHeight() - y;
-
-		if (dx != 0 && dy != 0)
+		if (!isNaN(x) && !isNaN(y))
 		{
-			entity.distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));
-			entity.r = Math.degrees(Math.atan2(dy, dx));
+			var dx = entity.x + entity.halfWidth() - x;
+			var dy = entity.y + entity.halfHeight() - y;
+			var newX = 0;
+			var newY = 0;
+
+			if (dx != 0 && dy != 0)
+			{
+				entity.distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));
+				entity.r = Math.degrees(Math.atan2(dy, dx));
+
+				newX = Math.cos(Math.radians(entity.r)) * entity.vx;
+				newY = Math.sin(Math.radians(entity.r)) * entity.vy;
+
+				entity.x = entity.x - newX;
+				entity.y = entity.y - newY;
+			}
 		}
 	}
 
@@ -431,11 +446,6 @@ function startLogic()
 		ctx.rotate(Math.radians(chicken.r - 90));
 		ctx.translate(-chicken.halfWidth(), -chicken.halfHeight());
 
-		//for (i = 0; i < chicken.distance; i++)
-		//{
-		ctx.save();
-		ctx.translate(0, 0);
-
 		ctx.drawImage(image,
 				chicken.srcX, //srcX			
 				chicken.srcY, // srcY			
@@ -444,13 +454,6 @@ function startLogic()
 				chicken.w, chicken.h);
 
 		ctx.restore();
-
-		//}
-//		}
-		ctx.restore();
-
-		chicken.x = clickLocation[0] - chicken.halfWidth();
-		chicken.y = clickLocation[1] - chicken.halfHeight();
 	}
 
 	function renderMap()
@@ -468,18 +471,15 @@ function startLogic()
 				{
 					tempX = 0;
 					tempY = 0;
-				}
-				else if (rot == 1)
+				} else if (rot == 1)
 				{
 					tempX = 0;
 					tempY = -1;
-				}
-				else if (rot == 2)
+				} else if (rot == 2)
 				{
 					tempX = -1;
 					tempY = -1;
-				}
-				else if (rot == 3)
+				} else if (rot == 3)
 				{
 					tempX = -1;
 					tempY = 0;
