@@ -86,3 +86,49 @@ var spriteID = function (id, rotation)
 	this.id = id;
 	this.rotation = rotation;
 };
+
+var simpleRect = function (x, y, w, h)
+{
+	this.x = x;
+	this.y = y;
+	this.h = h;
+	this.w = w;
+
+	this.left = function ()
+	{
+		return this.x;
+	};
+
+	this.right = function ()
+	{
+		return this.x + this.w;
+	};
+
+	this.top = function ()
+	{
+		return this.y;
+	};
+
+	this.bottom = function ()
+	{
+		return this.y + this.h;
+	};
+
+	this.center = function ()
+	{
+		return {
+			x: this.x + (this.w / 2),
+			y: this.y + (this.h / 2)
+		};
+	};
+
+	this.halfWidth = function ()
+	{
+		return this.w / 2;
+	};
+
+	this.halfHeight = function ()
+	{
+		return this.h / 2;
+	};
+};

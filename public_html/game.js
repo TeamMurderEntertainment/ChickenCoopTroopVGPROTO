@@ -72,24 +72,35 @@ function startLogic()
 	// Gamestates
 	var LOADING = 0;
 	var MENU = 1;
-	var PLAYING = 2;
-	var GAMEEND = 3;
+	var OPTIONS = 2;
+	var PLAYING = 3;
+	var GAMEEND = 4;
 	var gameState = LOADING;
 
 	var score;
 	var timeInSeconds;
 	var level;
 
+	var music = true;
+	var SFX = true;
+
 	var scoreElement;
 	var timeElement;
 	var levelElement;
 	var endElement;
+
+	var play = new simpleRect((canvas.width / 2) - (100), 405, 232, 64);
+	var options = new simpleRect((canvas.width / 2) - (100), 505, 232, 64);
+	var back = new simpleRect((canvas.width / 2) - (100), 605, 232, 64);
+	var SFXRect = new simpleRect((canvas.width / 2) - 20, 430, 16, 16);
+	var musicRect = new simpleRect((canvas.width / 2) - 20, 530, 16, 16);
 
 	var gameTimeInterval;
 
 	var sprites = [];
 	var spriteTiles = [[]];
 	var messages = [];
+	var btnMessages = [];
 
 	var clickLocation = [];
 
@@ -154,8 +165,8 @@ function startLogic()
 		btnCap.srcY = 64;
 		btnCap.srcW = 8;
 		btnCap.srcH = 32;
-		btnCap.w = 8;
-		btnCap.h = 32;
+		btnCap.w = 16;
+		btnCap.h = 64;
 		btnCap.visible = false;
 	}
 
@@ -165,9 +176,77 @@ function startLogic()
 		btnMid.srcY = 64;
 		btnMid.srcW = 1;
 		btnMid.srcH = 32;
-		btnMid.w = 1;
-		btnMid.h = 32;
+		btnMid.w = 2;
+		btnMid.h = 64;
 		btnMid.visible = false;
+	}
+
+	var chkBox = new SpriteObject();
+	{
+		chkBox.srcX = 16;
+		chkBox.srcY = 64;
+		chkBox.srcW = 16;
+		chkBox.srcH = 16;
+		chkBox.w = 16;
+		chkBox.h = 16;
+		chkBox.visible = true;
+	}
+
+
+
+	var btnMsgPlay = new MessageObject();
+	{
+		btnMsgPlay.text = "PLAY";
+		btnMsgPlay.font = "normal bold 30px komika";
+		btnMsgPlay.fontStyle = "red";
+		btnMsgPlay.x = (canvas.width / 2) - (btnMsgPlay.text.length * 7);
+		btnMsgPlay.y = 450;
+		btnMsgPlay.visible = false;
+		btnMessages.push(btnMsgPlay);
+	}
+
+	var btnMsgOptions = new MessageObject();
+	{
+		btnMsgOptions.text = "OPTIONS";
+		btnMsgOptions.font = "normal bold 30px komika";
+		btnMsgOptions.fontStyle = "red";
+		btnMsgOptions.x = (canvas.width / 2) - (btnMsgOptions.text.length * 7);
+		btnMsgOptions.y = 550;
+		btnMsgOptions.visible = false;
+		btnMessages.push(btnMsgOptions);
+	}
+
+	var btnMsgBack = new MessageObject();
+	{
+		btnMsgBack.text = "BACK";
+		btnMsgBack.font = "normal bold 30px komika";
+		btnMsgBack.fontStyle = "red";
+		btnMsgBack.x = (canvas.width / 2) - (btnMsgBack.text.length * 7);
+		btnMsgBack.y = 650;
+		btnMsgBack.visible = false;
+		btnMessages.push(btnMsgBack);
+	}
+
+	var btnMsgSFX = new MessageObject();
+	{
+		btnMsgSFX.text = "SFX";
+		btnMsgSFX.font = "normal bold 30px komika";
+		btnMsgSFX.fontStyle = "red";
+		btnMsgSFX.x = (canvas.width / 2) + 40;
+		btnMsgSFX.y = 450;
+		btnMsgSFX.visible = false;
+		btnMessages.push(btnMsgSFX);
+	}
+
+	var btnMsgMusic = new MessageObject();
+	{
+		btnMsgMusic.text = "Music";
+		btnMsgMusic.font = "normal bold 30px komika";
+		btnMsgMusic.fontStyle = "red";
+		btnMsgMusic.x = (canvas.width / 2) + 40;
+		btnMsgMusic.y = 550;
+		btnMsgMusic.visible = false;
+		btnMessages.push(btnMsgMusic);
 	}
 
 	function update()
@@ -179,6 +258,8 @@ function startLogic()
 			case LOADING:
 				break;
 			case MENU:
+				break;
+			case OPTIONS:
 				break;
 			case PLAYING:
 				playGame();
@@ -202,7 +283,8 @@ function startLogic()
 		//draw menu stuff
 		if (gameState == MENU)
 			renderMenu();
-
+		if (gameState == OPTIONS)
+			renderOptions();
 		//draw map
 		if (gameState == PLAYING || gameState == GAMEEND)
 		{
@@ -270,15 +352,15 @@ function startLogic()
 
 
 
-// dirt = 0
-// rock = 1
-// grass edge = 2
-// grass corner = 3
-// fence edge = 4
-// fence corner = 5
-// 
-// rotation is 0-3
-// 90*rotation clockwise
+	// dirt = 0
+	// rock = 1
+	// grass edge = 2
+	// grass corner = 3
+	// fence edge = 4
+	// fence corner = 5
+	// 
+	// rotation is 0-3
+	// 90*rotation clockwise
 
 	function genMap()
 	{
@@ -291,13 +373,13 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for (var x = 0; x < tileCountX; x++)
+		for (var x = 0; x < tileCountX; x ++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for (var y = 0; y < tileCountY; y++)
+			for (var y = 0; y < tileCountY; y ++)
 			{
 				id = 0;
 
@@ -355,27 +437,45 @@ function startLogic()
 
 	function mouseLocation(e)
 	{
-		if (gameState == MENU || gameState == GAMEEND)
+		if (event.which == 1)
+		{
+			if (e.pageX != undefined && e.pageY != undefined)
+			{
+				x = e.pageX;
+				y = e.pageY;
+			}
+
+			x -= canvas.offsetLeft;
+			y -= canvas.offsetTop;
+
+			clickLocation = [Math.floor(x), Math.floor(y)];
+
+		}
+		console.log(clickLocation[0], clickLocation[1]);
+		if ((gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], play)) || gameState == GAMEEND)
 		{
 			newGame = true;
 			gameState = PLAYING;
-		} else if (gameState == PLAYING)
+		}
+		else if (gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], options))
 		{
+			gameState = OPTIONS;
+		}
+		else if (gameState == OPTIONS)
+		{
+			if (hitTestPoint(clickLocation[0], clickLocation[1], back))
+				gameState = MENU;
 
-			if (event.which == 1)
-			{
-				if (e.pageX != undefined && e.pageY != undefined)
-				{
-					x = e.pageX;
-					y = e.pageY;
-				}
+			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
+				SFX = ! SFX;
 
-				x -= canvas.offsetLeft;
-				y -= canvas.offsetTop;
+			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
+				music = ! music;
+		}
+		else if (gameState == PLAYING)
+		{
+			addEventListener("mousemove", mouseMoved);
 
-				clickLocation = [Math.floor(x), Math.floor(y)];
-				addEventListener("mousemove", mouseMoved);
-			}
 		}
 	}
 
@@ -389,7 +489,7 @@ function startLogic()
 
 	function mouseMoved(e)
 	{
-		if (!buttonPressed(e))
+		if (! buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
 		} else
@@ -444,7 +544,7 @@ function startLogic()
 		ctx.translate(chicken.x + chicken.halfWidth(), chicken.y + chicken.halfHeight());
 
 		ctx.rotate(Math.radians(chicken.r - 90));
-		ctx.translate(-chicken.halfWidth(), -chicken.halfHeight());
+		ctx.translate(- chicken.halfWidth(), - chicken.halfHeight());
 
 		ctx.drawImage(image,
 				chicken.srcX, //srcX			
@@ -458,9 +558,9 @@ function startLogic()
 
 	function renderMap()
 	{
-		for (var x = 0; x < tileCountX; x++)
+		for (var x = 0; x < tileCountX; x ++)
 		{
-			for (var y = 0; y < tileCountY; y++)
+			for (var y = 0; y < tileCountY; y ++)
 			{
 
 				var tempX = 0;
@@ -474,14 +574,16 @@ function startLogic()
 				} else if (rot == 1)
 				{
 					tempX = 0;
-					tempY = -1;
-				} else if (rot == 2)
+					tempY = - 1;
+				}
+				else if (rot == 2)
 				{
-					tempX = -1;
-					tempY = -1;
-				} else if (rot == 3)
+					tempX = - 1;
+					tempY = - 1;
+				}
+				else if (rot == 3)
 				{
-					tempX = -1;
+					tempX = - 1;
 					tempY = 0;
 				}
 
@@ -504,7 +606,7 @@ function startLogic()
 		timeElement.text = timeInSeconds + " seconds left";
 		scoreElement.text = score + " worm smears";
 
-		for (var i = 0; i < messages.length; i++)
+		for (var i = 0; i < messages.length; i ++)
 		{
 			var message = messages[i];
 
@@ -522,8 +624,15 @@ function startLogic()
 
 	function renderMenu()
 	{
-		for (var i = 0; i < sprites.length; i++)
+		btnMsgOptions.visible = true;
+		btnMsgPlay.visible = true;
+		btnMsgBack.visible = false;
+		btnMsgSFX.visible = false;
+		btnMsgMusic.visible = false;
+
+		for (var i = 0; i < sprites.length; i ++)
 		{
+
 			var sprite = sprites[i];
 			if (sprite.visible)
 			{
@@ -536,6 +645,117 @@ function startLogic()
 						);
 			}
 		}
+		renderButton(405);
+		renderButton(505);
+		for (var i = 0; i < btnMessages.length; i ++)
+		{
+			var btnMessage = btnMessages[i];
+			if (btnMessage.visible)
+			{
+				ctx.font = btnMessage.font;
+				ctx.fillStyle = btnMessage.fontStyle;
+				ctx.textBaseLine = btnMessage.textBaseline;
+
+				ctx.fillText(btnMessage.text, btnMessage.x, btnMessage.y);
+			}
+		}
+
+		ctx.rect(play.x, play.y, play.w, play.h);
+		ctx.stroke();
+
+		ctx.rect(options.x, options.y, options.w, options.h);
+		ctx.stroke();
+
+	}
+
+	function renderOptions()
+	{
+		btnMsgBack.visible = true;
+		btnMsgPlay.visible = false;
+		btnMsgOptions.visible = false;
+		btnMsgSFX.visible = true;
+		btnMsgMusic.visible = true;
+
+		for (var i = 0; i < sprites.length; i ++)
+		{
+
+			var sprite = sprites[i];
+			if (sprite.visible)
+			{
+
+				ctx.drawImage(image,
+						sprite.srcX, sprite.srcY,
+						sprite.srcW, sprite.srcH,
+						Math.floor(sprite.x), Math.floor(sprite.y),
+						sprite.w, sprite.h
+						);
+			}
+		}
+		renderButton(605);
+
+		renderCheckBox((canvas.width / 2) - 20, 430, SFX);
+		renderCheckBox((canvas.width / 2) - 20, 530, music);
+
+		for (var i = 0; i < btnMessages.length; i ++)
+		{
+			var btnMessage = btnMessages[i];
+			if (btnMessage.visible)
+			{
+				ctx.font = btnMessage.font;
+				ctx.fillStyle = btnMessage.fontStyle;
+				ctx.textBaseLine = btnMessage.textBaseline;
+
+				ctx.fillText(btnMessage.text, btnMessage.x, btnMessage.y);
+			}
+		}
+	}
+
+	function renderCheckBox(x, y, checked)
+	{
+		ctx.drawImage(image,
+				chkBox.srcX, (checked ? chkBox.srcY + 16 : chkBox.srcY),
+				chkBox.srcW, chkBox.srcH,
+				x, y,
+				chkBox.w, chkBox.h
+				);
+	}
+
+	function renderButton(yLocation)
+	{
+		var xSize = 100;
+		//var xStart = ((canvas.width / 2) - (xSize / 2), yLocation);
+		ctx.save();
+
+		ctx.translate((canvas.width / 2) - (xSize), yLocation);
+		ctx.drawImage(image,
+				btnCap.srcX, btnCap.srcY,
+				btnCap.srcW, btnCap.srcH,
+				0, 0,
+				btnCap.w, btnCap.h
+				);
+
+		ctx.translate(16, 0);
+		for (var i = 0; i < xSize; i += 1)
+		{
+			ctx.drawImage(image,
+					btnMid.srcX, btnMid.srcY,
+					btnMid.srcW, btnMid.srcH,
+					0, 0,
+					btnMid.w, btnMid.h
+					);
+			ctx.translate(2, 0);
+		}
+
+		ctx.translate(16, 0);
+		ctx.rotate(Math.radians(180));
+
+		ctx.drawImage(image,
+				btnCap.srcX, btnCap.srcY,
+				btnCap.srcW, btnCap.srcH,
+				0, 0 - 64,
+				btnCap.w, btnCap.h
+				);
+		ctx.restore();
 	}
 
 	update();
