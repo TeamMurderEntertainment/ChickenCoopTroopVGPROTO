@@ -85,6 +85,9 @@ function startLogic()
 	var levelElement;
 	var endElement;
 
+	var play = new simpleRect((canvas.width / 2) - (100), 405, 232, 64);
+	var options = new simpleRect((canvas.width / 2) - (100), 505, 232, 64);
+
 	var gameTimeInterval;
 
 	var sprites = [];
@@ -376,28 +379,33 @@ function startLogic()
 
 	function mouseLocation(e)
 	{
+		if (event.which == 1)
+		{
+			if (e.pageX != undefined && e.pageY != undefined)
+			{
+				x = e.pageX;
+				y = e.pageY;
+			}
+
+			x -= canvas.offsetLeft;
+			y -= canvas.offsetTop;
+
+			clickLocation = [Math.floor(x), Math.floor(y)];
+
+		}
+		console.log(clickLocation[0], clickLocation[1]);
 		if (gameState == MENU || gameState == GAMEEND)
 		{
-			newGame = true;
-			gameState = PLAYING;
+			if (hitTestPoint(clickLocation[0], clickLocation[1], play) || gameState == GAMEEND)
+			{
+				newGame = true;
+				gameState = PLAYING;
+			}
 		}
 		else if (gameState == PLAYING)
 		{
+			addEventListener("mousemove", mouseMoved);
 
-			if (event.which == 1)
-			{
-				if (e.pageX != undefined && e.pageY != undefined)
-				{
-					x = e.pageX;
-					y = e.pageY;
-				}
-
-				x -= canvas.offsetLeft;
-				y -= canvas.offsetTop;
-
-				clickLocation = [Math.floor(x), Math.floor(y)];
-				addEventListener("mousemove", mouseMoved);
-			}
 		}
 	}
 
@@ -573,6 +581,13 @@ function startLogic()
 				ctx.fillText(btnMessage.text, btnMessage.x, btnMessage.y);
 			}
 		}
+
+		ctx.rect(play.x, play.y,play.w,play.h);
+		ctx.stroke();
+
+		ctx.rect(options.x, options.y,options.w,options.h);
+		ctx.stroke();
+
 	}
 
 	function renderButton(yLocation)
@@ -589,7 +604,7 @@ function startLogic()
 				btnCap.w, btnCap.h
 				);
 
-			ctx.translate(16, 0);
+		ctx.translate(16, 0);
 		for (var i = 0; i < xSize; i += 1)
 		{
 			ctx.drawImage(image,

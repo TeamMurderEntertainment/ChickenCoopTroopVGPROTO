@@ -2,14 +2,14 @@
  * checks to see if am x and y cord is in a SpriteObject
  * @param {int} px x of point
  * @param {int} py y of point
- * @param {SpriteObject} r SpriteObject checking hit on
+ * @param {SpriteObject or SimpleRect} r SpriteObject checking hit on
  * @returns {Boolean} true if hit, false if miss
  */
 function hitTestPoint(px, py, r)
 {
 	var hit = false;
-
-	if ( px > r.left() && px < r.right() && py > r.top() && py < r.bottom() )
+	console.log(px > r.left(), px < r.right(), py > r.top(), py < r.bottom());
+	if (px > r.left() && px < r.right() && py > r.top() && py < r.bottom())
 		hit = true;
 
 	return hit;
@@ -28,11 +28,11 @@ function hitTestRectangle(r1, r2)
 	var dy = r1.center().y - r2.center().y;
 
 	var sumHalfWidths = r1.halfWidth() + r2.halfWidth();
-	if ( Math.abs(dx) < sumHalfWidths )
+	if (Math.abs(dx) < sumHalfWidths)
 	{
 		var sumHalfHeights = r1.halfHeight() + r2.halfHeight();
 
-		if ( Math.abs(dy) < sumHalfHeights )
+		if (Math.abs(dy) < sumHalfHeights)
 			hit = true;
 	}
 	return hit;
