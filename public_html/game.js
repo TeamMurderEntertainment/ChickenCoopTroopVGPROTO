@@ -38,7 +38,7 @@ function startLogic()
 
 			canvas.addEventListener("mousedown", mouseLocation);
 			gameState = MENU;
-			console.log(gameState);
+//			console.log(gameState);
 
 			timeElement = new MessageObject();
 			timeElement.text = timeInSeconds + " seconds left";
@@ -451,7 +451,7 @@ function startLogic()
 			clickLocation = [Math.floor(x), Math.floor(y)];
 
 		}
-		console.log(clickLocation[0], clickLocation[1]);
+//		console.log(clickLocation[0], clickLocation[1]);
 		if ((gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], play)) || gameState == GAMEEND)
 		{
 			newGame = true;
@@ -529,6 +529,12 @@ function startLogic()
 
 				newX = Math.cos(Math.radians(entity.r)) * entity.vx;
 				newY = Math.sin(Math.radians(entity.r)) * entity.vy;
+				
+				if (entity.distance < 10)
+				{
+					newX = 0;
+					newY = 0;
+				}
 
 				entity.x = entity.x - newX;
 				entity.y = entity.y - newY;
