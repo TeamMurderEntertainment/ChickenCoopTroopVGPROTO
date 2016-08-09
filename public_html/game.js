@@ -38,7 +38,6 @@ function startLogic()
 
 			canvas.addEventListener("mousedown", mouseLocation);
 			gameState = MENU;
-			console.log(gameState);
 
 			timeElement = new MessageObject();
 			timeElement.text = timeInSeconds + " seconds left";
@@ -99,6 +98,7 @@ function startLogic()
 
 	var sprites = [];
 	var spriteTiles = [[]];
+	var worms = [];
 	var messages = [];
 	var btnMessages = [];
 
@@ -148,6 +148,85 @@ function startLogic()
 		sprites.push(chicken);
 	}
 
+	var wormObject = function ()
+	{
+		this.startDistance = 0;
+		this.sprite = new SpriteObject();
+		this.NORMAL = [0, 2];
+		this.DEAD = [1, 2];
+		this.state = this.NORMAL;
+
+		this.update = function ()
+		{
+			this.sprite.srcX = this.state[0] * this.sprite.srcW;
+			this.sprite.srcY = this.state[1] * this.sprite.srcH;
+		};
+		this.getScore = function ()
+		{
+			var score = getPercentage(this.sprite.distance, this.startDistance, false);
+			return Math.floor(score / 2) + 50;
+		};
+	};
+
+	function createWorm()
+	{
+		var worm = new wormObject();
+		{
+			worm.sprite.srcY = 128;
+			worm.sprite.srcW = 32;
+			worm.sprite.srcH = 64;
+			worm.sprite.w = 32;
+			worm.sprite.h = 64;
+			worm.sprite.r = 0;
+			worm.sprite.vx = 2;
+			worm.sprite.vy = 2;
+			worm.sprite.distance = 0;
+			worm.sprite.visible = false;
+			worm.update();
+			sprites.push(worm.sprite);
+			worms.push(worm);
+		}
+
+		var axis = getRandom(0, 1);
+		var range = getRandom(0, 1);
+
+		if (range)
+		{
+			range = (axis ? canvas.width + worm.sprite.halfHeight() : canvas.height + worm.sprite.halfHeight());
+		}
+		else
+		{
+			range = range - worm.sprite.h;
+		}
+
+		var meow = getRandom(0, (!axis ? canvas.width : canvas.height));
+
+		if (axis)
+		{
+			worm.sprite.x = range;
+			worm.sprite.y = meow;
+		}
+		else
+		{
+			worm.sprite.y = range;
+			worm.sprite.x = meow;
+		}
+	}
+
+	var nest = new SpriteObject();
+	{
+		nest.srcX = 128;
+		nest.srcY = 128;
+		nest.srcW = 64;
+		nest.srcH = 64;
+		nest.w = 64;
+		nest.h = 64;
+		nest.x = canvas.width / 2 - nest.halfWidth();
+		nest.y = canvas.height / 2 - nest.halfHeight();
+		nest.visible = false;
+		sprites.push(nest);
+	}
+
 	var bgTile = new SpriteObject();
 	{
 		bgTile.srcX = 32;
@@ -191,8 +270,6 @@ function startLogic()
 		chkBox.h = 16;
 		chkBox.visible = true;
 	}
-
-
 
 	var btnMsgPlay = new MessageObject();
 	{
@@ -270,10 +347,7 @@ function startLogic()
 			default:
 				console.log("Welp, shit went pear shaped on us....");
 		}
-
-
 		render();
-
 	}
 
 	function render()
@@ -294,16 +368,53 @@ function startLogic()
 			canvas.addEventListener("mousedown", mouseLocation);
 			canvas.addEventListener("mouseup", mouseReset);
 			//draw chicken
-			drawChicken();
+			drawEntity(nest);
 
+			for (i = 0; i < worms.length; i++)
+			{
+				var worm = worms[i];
+				if (worm.state != worm.DEAD)
+				{
+					entityMove(nest.center().x, nest.center().y, worm.sprite);
+
+					if (worm.startDistance == 0)
+						worm.startDistance = worm.sprite.distance;
+
+					if (hitTestRectangle(chicken, worm.sprite))
+						killWorm(worm);
+
+					if (hitTestRectangle(worm.sprite, nest))
+						gameState = GAMEEND;
+
+				}
+				drawEntity(worm.sprite);
+			}
+
+			entityMove(clickLocation[0], clickLocation[1], chicken);
+
+			drawEntity(chicken);
 			renderScoreUI();
 		}
 	}
 
+	function killWorm(worm)
+	{
+		score += worm.getScore();
+		worm.state = worm.DEAD;
+		worm.update();
+		setTimeout(removeWorm, 1000);
+
+		function removeWorm()
+		{
+			removeObject(worm.sprite, sprites);
+			removeObject(worm, worms);
+		}
+	}
+
+
 
 	function playGame()
 	{
-
 		if (newGame)
 		{
 			initGameUI();
@@ -315,7 +426,7 @@ function startLogic()
 	function initGameUI()
 	{
 		score = 0;
-		timeInSeconds = 3;
+		timeInSeconds = 30;
 		level = 1;
 
 		endElement.visible = false;
@@ -332,13 +443,14 @@ function startLogic()
 		gameTimeInterval = window.setInterval(function ()
 		{
 			timeInSeconds -= 1;
+
+			if (timeInSeconds % 2 == 0)
+				createWorm();
+
 			if (timeInSeconds == 0)
 			{
 				clearInterval(gameTimeInterval);
 				gameState = GAMEEND;
-
-				endElement.text = timeInSeconds + " seconds left, times up, you got " + score + " worms killed.";
-				endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 30);
 			}
 		}, 1000);
 
@@ -347,10 +459,22 @@ function startLogic()
 
 	function endGame()
 	{
+		if (timeInSeconds == 0)
+			endElement.text = "Times up, you got " + score + " worms killed.";
+		else
+			endElement.text = timeInSeconds + " seconds left, the nest has fallen, you got " + score + " worms killed.";
+
+		endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 30);
 		endElement.visible = true;
+		for (i = 0; i < worms.length; i++)
+		{
+			var worm = worms[i];
+			removeObject(worm.sprite, sprites);
+
+		}
+		clearInterval(gameTimeInterval);
+		worms = [];
 	}
-
-
 
 	// dirt = 0
 	// rock = 1
@@ -373,13 +497,13 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 				id = 0;
 
@@ -451,7 +575,6 @@ function startLogic()
 			clickLocation = [Math.floor(x), Math.floor(y)];
 
 		}
-		console.log(clickLocation[0], clickLocation[1]);
 		if ((gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], play)) || gameState == GAMEEND)
 		{
 			newGame = true;
@@ -467,10 +590,10 @@ function startLogic()
 				gameState = MENU;
 
 			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
-				SFX = ! SFX;
+				SFX = !SFX;
 
 			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
-				music = ! music;
+				music = !music;
 		}
 		else if (gameState == PLAYING)
 		{
@@ -489,10 +612,11 @@ function startLogic()
 
 	function mouseMoved(e)
 	{
-		if (! buttonPressed(e))
+		if (!buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
-		} else
+		}
+		else
 		{
 			if (e.pageX != undefined && e.pageY != undefined)
 			{
@@ -530,37 +654,43 @@ function startLogic()
 				newX = Math.cos(Math.radians(entity.r)) * entity.vx;
 				newY = Math.sin(Math.radians(entity.r)) * entity.vy;
 
+				if (entity.distance < 10)
+				{
+					newX = 0;
+					newY = 0;
+				}
+
 				entity.x = entity.x - newX;
 				entity.y = entity.y - newY;
 			}
 		}
 	}
 
-	function drawChicken()
+	function drawEntity(entity)
 	{
-		entityMove(clickLocation[0], clickLocation[1], chicken);
+//		entityMove(locX, locY, entity);
 
 		ctx.save();
-		ctx.translate(chicken.x + chicken.halfWidth(), chicken.y + chicken.halfHeight());
+		ctx.translate(entity.x + entity.halfWidth(), entity.y + entity.halfHeight());
 
-		ctx.rotate(Math.radians(chicken.r - 90));
-		ctx.translate(- chicken.halfWidth(), - chicken.halfHeight());
+		ctx.rotate(Math.radians(entity.r - 90));
+		ctx.translate(-entity.halfWidth(), -entity.halfHeight());
 
 		ctx.drawImage(image,
-				chicken.srcX, //srcX			
-				chicken.srcY, // srcY			
-				chicken.srcW, chicken.srcH,
+				entity.srcX, //srcX			
+				entity.srcY, // srcY			
+				entity.srcW, entity.srcH,
 				0, 0,
-				chicken.w, chicken.h);
+				entity.w, entity.h);
 
 		ctx.restore();
 	}
 
 	function renderMap()
 	{
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 
 				var tempX = 0;
@@ -571,19 +701,20 @@ function startLogic()
 				{
 					tempX = 0;
 					tempY = 0;
-				} else if (rot == 1)
+				}
+				else if (rot == 1)
 				{
 					tempX = 0;
-					tempY = - 1;
+					tempY = -1;
 				}
 				else if (rot == 2)
 				{
-					tempX = - 1;
-					tempY = - 1;
+					tempX = -1;
+					tempY = -1;
 				}
 				else if (rot == 3)
 				{
-					tempX = - 1;
+					tempX = -1;
 					tempY = 0;
 				}
 
@@ -606,7 +737,7 @@ function startLogic()
 		timeElement.text = timeInSeconds + " seconds left";
 		scoreElement.text = score + " worm smears";
 
-		for (var i = 0; i < messages.length; i ++)
+		for (var i = 0; i < messages.length; i++)
 		{
 			var message = messages[i];
 
@@ -630,7 +761,7 @@ function startLogic()
 		btnMsgSFX.visible = false;
 		btnMsgMusic.visible = false;
 
-		for (var i = 0; i < sprites.length; i ++)
+		for (var i = 0; i < sprites.length; i++)
 		{
 
 			var sprite = sprites[i];
@@ -647,7 +778,7 @@ function startLogic()
 		}
 		renderButton(405);
 		renderButton(505);
-		for (var i = 0; i < btnMessages.length; i ++)
+		for (var i = 0; i < btnMessages.length; i++)
 		{
 			var btnMessage = btnMessages[i];
 			if (btnMessage.visible)
@@ -659,13 +790,6 @@ function startLogic()
 				ctx.fillText(btnMessage.text, btnMessage.x, btnMessage.y);
 			}
 		}
-
-		ctx.rect(play.x, play.y, play.w, play.h);
-		ctx.stroke();
-
-		ctx.rect(options.x, options.y, options.w, options.h);
-		ctx.stroke();
-
 	}
 
 	function renderOptions()
@@ -676,7 +800,7 @@ function startLogic()
 		btnMsgSFX.visible = true;
 		btnMsgMusic.visible = true;
 
-		for (var i = 0; i < sprites.length; i ++)
+		for (var i = 0; i < sprites.length; i++)
 		{
 
 			var sprite = sprites[i];
@@ -696,7 +820,7 @@ function startLogic()
 		renderCheckBox((canvas.width / 2) - 20, 430, SFX);
 		renderCheckBox((canvas.width / 2) - 20, 530, music);
 
-		for (var i = 0; i < btnMessages.length; i ++)
+		for (var i = 0; i < btnMessages.length; i++)
 		{
 			var btnMessage = btnMessages[i];
 			if (btnMessage.visible)
