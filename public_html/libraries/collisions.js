@@ -43,7 +43,7 @@ function hitTestCircle(c1, c2)
 	var vx = c1.center().x - c2.center().x;
 	var vy = c1.center().y - c2.center().y;
 
-	var magnitude = Mathsqrt(vx * vx + vy * vy);
+	var magnitude = Math.sqrt(vx * vx + vy * vy);
 	var totalRadii = c1.halfWidth() + c2.halfWidth();
 	var hit = magnitude < totalRadii;
 

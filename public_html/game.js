@@ -139,10 +139,9 @@ function startLogic()
 		chicken.w = 64;
 		chicken.h = 64;
 		chicken.x = canvas.width / 2 - chicken.halfWidth();
-		chicken.y = canvas.height / 2 - chicken.halfHeight();
+		chicken.y = canvas.height / 2 + chicken.halfHeight()+10;
 		chicken.r = 0;
-		chicken.vx = 4;
-		chicken.vy = 4;
+		chicken.speed = 4;
 		chicken.distance = 0;
 		chicken.visible = false;
 		sprites.push(chicken);
@@ -178,8 +177,7 @@ function startLogic()
 			worm.sprite.w = 32;
 			worm.sprite.h = 64;
 			worm.sprite.r = 0;
-			worm.sprite.vx = 2;
-			worm.sprite.vy = 2;
+			worm.sprite.speed = 2;
 			worm.sprite.distance = 0;
 			worm.sprite.visible = false;
 			worm.update();
@@ -390,7 +388,16 @@ function startLogic()
 				drawEntity(worm.sprite);
 			}
 
+			
+			var tempX = chicken.x;
+			var tempY = chicken.y;
 			entityMove(clickLocation[0], clickLocation[1], chicken);
+
+			if (hitTestCircle(nest, chicken))
+			{
+				chicken.x = tempX;
+				chicken.y = tempY;
+			}
 
 			drawEntity(chicken);
 			renderScoreUI();
@@ -643,25 +650,23 @@ function startLogic()
 		{
 			var dx = entity.x + entity.halfWidth() - x;
 			var dy = entity.y + entity.halfHeight() - y;
-			var newX = 0;
-			var newY = 0;
 
 			if (dx != 0 && dy != 0)
 			{
 				entity.distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));
 				entity.r = Math.degrees(Math.atan2(dy, dx));
 
-				newX = Math.cos(Math.radians(entity.r)) * entity.vx;
-				newY = Math.sin(Math.radians(entity.r)) * entity.vy;
+				entity.vx = Math.cos(Math.radians(entity.r)) * entity.speed;
+				entity.vy = Math.sin(Math.radians(entity.r)) * entity.speed;
 
 				if (entity.distance < 10)
 				{
-					newX = 0;
-					newY = 0;
+					entity.vx = 0;
+					entity.vy = 0;
 				}
 
-				entity.x = entity.x - newX;
-				entity.y = entity.y - newY;
+				entity.x = entity.x - entity.vx;
+				entity.y = entity.y - entity.vy;
 			}
 		}
 	}
