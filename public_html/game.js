@@ -139,7 +139,7 @@ function startLogic()
 		chicken.w = 64;
 		chicken.h = 64;
 		chicken.x = canvas.width / 2 - chicken.halfWidth();
-		chicken.y = canvas.height / 2 - chicken.halfHeight();
+		chicken.y = canvas.height / 2 + chicken.halfHeight()+10;
 		chicken.r = 0;
 		chicken.speed = 4;
 		chicken.distance = 0;
@@ -388,7 +388,16 @@ function startLogic()
 				drawEntity(worm.sprite);
 			}
 
+			
+			var tempX = chicken.x;
+			var tempY = chicken.y;
 			entityMove(clickLocation[0], clickLocation[1], chicken);
+
+			if (hitTestCircle(nest, chicken))
+			{
+				chicken.x = tempX;
+				chicken.y = tempY;
+			}
 
 			drawEntity(chicken);
 			renderScoreUI();
@@ -655,7 +664,7 @@ function startLogic()
 					entity.vx = 0;
 					entity.vy = 0;
 				}
-				
+
 				entity.x = entity.x - entity.vx;
 				entity.y = entity.y - entity.vy;
 			}
