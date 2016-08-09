@@ -38,10 +38,12 @@ function getPercentage(a,b,asString)
 	if (asString == null)
 		asString = true;
 	
+	var percent = Math.floor((a / b)*100);
+	
 	if (asString)
-		return Math.floor((a / b)*100).toString();
+		return percent.toString();
 	else
-		return Math.floor((a / b)*100);
+		return percent;
 }
 
 /**
