@@ -372,25 +372,27 @@ function startLogic()
 
 			for (i = 0; i < worms.length; i++)
 			{
-				if (worms[i].state != worms[i].DEAD)
+				var worm = worms[i];
+				if (worm.state != worm.DEAD)
 				{
-					entityMove(nest.center().x, nest.center().y, worms[i].sprite);
-					
-					console.log(worms[i].startDistance);
-					if (worms[i].startDistance == 0)
-						worms[i].startDistance = worms[i].sprite.distance;
+					entityMove(nest.center().x, nest.center().y, worm.sprite);
 
-					if (hitTestRectangle(chicken, worms[i].sprite))
-					{
-						killWorm(worms[i]);
-					}
-					drawEntity(worms[i].sprite);
+					if (worm.startDistance == 0)
+						worm.startDistance = worm.sprite.distance;
+
+					if (hitTestRectangle(chicken, worm.sprite))
+						killWorm(worm);
+
+					if (hitTestRectangle(worm.sprite, nest))
+						gameState = GAMEEND;
+
 				}
+				drawEntity(worm.sprite);
 			}
 
 			entityMove(clickLocation[0], clickLocation[1], chicken);
-			drawEntity(chicken);
 
+			drawEntity(chicken);
 			renderScoreUI();
 		}
 	}
@@ -401,6 +403,7 @@ function startLogic()
 		worm.state = worm.DEAD;
 		worm.update();
 		setTimeout(removeWorm, 1000);
+
 		function removeWorm()
 		{
 			removeObject(worm.sprite, sprites);
@@ -423,7 +426,7 @@ function startLogic()
 	function initGameUI()
 	{
 		score = 0;
-		timeInSeconds = 10;
+		timeInSeconds = 30;
 		level = 1;
 
 		endElement.visible = false;
@@ -448,9 +451,6 @@ function startLogic()
 			{
 				clearInterval(gameTimeInterval);
 				gameState = GAMEEND;
-
-				endElement.text = timeInSeconds + " seconds left, times up, you got " + score + " worms killed.";
-				endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 30);
 			}
 		}, 1000);
 
@@ -459,7 +459,21 @@ function startLogic()
 
 	function endGame()
 	{
+		if (timeInSeconds == 0)
+			endElement.text = "Times up, you got " + score + " worms killed.";
+		else
+			endElement.text = timeInSeconds + " seconds left, the nest has fallen, you got " + score + " worms killed.";
+
+		endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 30);
 		endElement.visible = true;
+		for (i = 0; i < worms.length; i++)
+		{
+			var worm = worms[i];
+			removeObject(worm.sprite, sprites);
+
+		}
+		clearInterval(gameTimeInterval);
+		worms = [];
 	}
 
 	// dirt = 0
@@ -634,7 +648,7 @@ function startLogic()
 
 			if (dx != 0 && dy != 0)
 			{
-				entity.distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));				
+				entity.distance = Math.floor(Math.sqrt((dx * dx) + (dy * dy)));
 				entity.r = Math.degrees(Math.atan2(dy, dx));
 
 				newX = Math.cos(Math.radians(entity.r)) * entity.vx;
