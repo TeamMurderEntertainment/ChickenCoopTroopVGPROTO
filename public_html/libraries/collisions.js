@@ -8,7 +8,7 @@
 function hitTestPoint(px, py, r)
 {
 	var hit = false;
-	console.log(px > r.left(), px < r.right(), py > r.top(), py < r.bottom());
+//	console.log(px > r.left(), px < r.right(), py > r.top(), py < r.bottom());
 	if (px > r.left() && px < r.right() && py > r.top() && py < r.bottom())
 		hit = true;
 
