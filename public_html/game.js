@@ -192,7 +192,7 @@ function startLogic()
 		chicken.speed = 4;
 		chicken.framesLeft = 5;
 		chicken.distance = 0;
-		chicken.state = .5;
+		chicken.state = 0;
 
 		chicken.update = function ()
 		{
@@ -203,10 +203,10 @@ function startLogic()
 		{
 			if (chicken.framesLeft == 0)
 			{
-				if (chicken.state == .5)
-					chicken.state = 1.5;
+				if (chicken.state == 0)
+					chicken.state = 1;
 				else
-					chicken.state = .5;
+					chicken.state = 0;
 
 				chicken.framesLeft = 10;
 			}
