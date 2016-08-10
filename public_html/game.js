@@ -46,35 +46,7 @@ function startLogic()
 			canvas.addEventListener("mousedown", mouseLocation);
 			gameState = MENU;
 
-			timeElement = new MessageObject();
-			timeElement.text = timeInSeconds + " seconds left";
-			timeElement.x = canvas.offsetLeft + 30;
-			timeElement.y = canvas.offsetTop + 30;
-			timeElement.font = "normal bold 20px komika";
-			timeElement.visible = false;
-			messages.push(timeElement);
 
-			levelElement = new MessageObject();
-			levelElement.text = "level: " + level;
-			levelElement.x = canvas.offsetLeft + (canvas.width / 2) - ((levelElement.text.length * 9) / 2);
-			levelElement.y = canvas.offsetTop + 30;
-			levelElement.font = "normal bold 20px komika";
-			levelElement.visible = false;
-			messages.push(levelElement);
-
-			scoreElement = new MessageObject();
-			scoreElement.text = score + " worm smears";
-			scoreElement.x = canvas.offsetLeft + canvas.width - (scoreElement.text.length * 9);
-			scoreElement.y = canvas.offsetTop + 30;
-			scoreElement.font = "normal bold 20px komika";
-			scoreElement.visible = false;
-			messages.push(scoreElement);
-
-			endElement = new MessageObject();
-			endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 8);
-			endElement.y = canvas.offsetTop + (canvas.height / 2) - 10;
-			endElement.visible = false;
-			messages.push(endElement);
 		}
 	}
 
@@ -90,19 +62,19 @@ function startLogic()
 	var timeInSeconds;
 	var level;
 
+	var fontHUI = 14;
+	var fontHMenu = 21;
+	var menuFont = "normal bold 30px cella";
+	var UIFont = "normal bold 20px cella";
+
 	var music = true;
 	var SFX = true;
-
-	var scoreElement;
-	var timeElement;
-	var levelElement;
-	var endElement;
 
 	var play = new simpleRect((canvas.width / 2) - (100), 405, 232, 64);
 	var options = new simpleRect((canvas.width / 2) - (100), 505, 232, 64);
 	var back = new simpleRect((canvas.width / 2) - (100), 605, 232, 64);
-	var SFXRect = new simpleRect((canvas.width / 2) - 20, 430, 16, 16);
-	var musicRect = new simpleRect((canvas.width / 2) - 20, 530, 16, 16);
+	var SFXRect = new simpleRect((canvas.width / 2) - 40, 425, 32, 32);
+	var musicRect = new simpleRect((canvas.width / 2) - 40, 525, 32, 32);
 
 	var gameTimeInterval;
 
@@ -115,6 +87,65 @@ function startLogic()
 	var clickLocation = [];
 
 	var newGame = true;
+
+	var timeElement = new MessageObject();
+	{
+		timeElement.update = function ()
+		{
+			timeElement.text = timeInSeconds + " seconds left";
+			timeElement.x = canvas.offsetLeft + 30;
+		};
+
+		timeElement.update();
+		timeElement.y = canvas.offsetTop + 30;
+		timeElement.font = UIFont;
+		timeElement.visible = false;
+		messages.push(timeElement);
+	}
+
+	var levelElement = new MessageObject();
+	{
+		levelElement.update = function ()
+		{
+			levelElement.text = "level: " + level;
+			levelElement.x = canvas.offsetLeft + (canvas.width / 2) - ((levelElement.text.length * fontHUI) / 2);
+		};
+
+		levelElement.update();
+		levelElement.y = canvas.offsetTop + 30;
+		levelElement.font = UIFont;
+		levelElement.visible = false;
+		messages.push(levelElement);
+	}
+
+	var scoreElement = new MessageObject();
+	{
+		scoreElement.update = function ()
+		{
+			scoreElement.text = "Score: " + score;
+			scoreElement.x = canvas.offsetLeft + canvas.width - (scoreElement.text.length * fontHUI) - 40;
+		};
+
+		scoreElement.update();
+		scoreElement.y = canvas.offsetTop + 30;
+		scoreElement.font = UIFont;
+		scoreElement.visible = false;
+		messages.push(scoreElement);
+	}
+
+	var endElement = new MessageObject();
+	{
+		endElement.update = function ()
+		{
+			endElement.x = canvas.offsetLeft + (canvas.width / 2) - ((endElement.text.length * fontHUI) / 2);
+		};
+
+		endElement.update();
+		endElement.y = canvas.offsetTop + (canvas.height / 2) - 50;
+		endElement.font = UIFont;
+		endElement.visible = false;
+		messages.push(endElement);
+	}
 
 	var background = new SpriteObject();
 	{
@@ -187,6 +218,7 @@ function startLogic()
 		this.DEAD = 3;
 		this.state = this.NORMAL;
 		this.framesLeft = 10;
+		this.ascend = true;
 
 		this.update = function ()
 		{
@@ -201,11 +233,17 @@ function startLogic()
 		{
 			if (this.framesLeft == 0)
 			{
-				if (this.state == 2)
-					this.state = 0;
-				else
+				if (this.state == 0)
+					this.ascend = true;
+				else if (this.state == 2)
+					this.ascend = false;
+
+				if (! this.ascend)
+					this.state -= 1;
+				else if (this.ascend)
 					this.state += 1;
 
+				console.log(this.ascend, this.state);
 				this.framesLeft = 10;
 			}
 			else
@@ -310,17 +348,17 @@ function startLogic()
 		chkBox.srcY = 64;
 		chkBox.srcW = 16;
 		chkBox.srcH = 16;
-		chkBox.w = 16;
-		chkBox.h = 16;
+		chkBox.w = 32;
+		chkBox.h = 32;
 		chkBox.visible = true;
 	}
 
 	var btnMsgPlay = new MessageObject();
 	{
 		btnMsgPlay.text = "PLAY";
-		btnMsgPlay.font = "normal bold 30px komika";
+		btnMsgPlay.font = menuFont;
 		btnMsgPlay.fontStyle = "red";
-		btnMsgPlay.x = (canvas.width / 2) - (btnMsgPlay.text.length * 7);
+		btnMsgPlay.x = (canvas.width / 2) - ((btnMsgPlay.text.length * fontHMenu) / 2);
 		btnMsgPlay.y = 450;
 		btnMsgPlay.visible = false;
 		btnMessages.push(btnMsgPlay);
@@ -329,9 +367,9 @@ function startLogic()
 	var btnMsgOptions = new MessageObject();
 	{
 		btnMsgOptions.text = "OPTIONS";
-		btnMsgOptions.font = "normal bold 30px komika";
+		btnMsgOptions.font = menuFont;
 		btnMsgOptions.fontStyle = "red";
-		btnMsgOptions.x = (canvas.width / 2) - (btnMsgOptions.text.length * 7);
+		btnMsgOptions.x = (canvas.width / 2) - ((btnMsgOptions.text.length * fontHMenu) / 2);
 		btnMsgOptions.y = 550;
 		btnMsgOptions.visible = false;
 		btnMessages.push(btnMsgOptions);
@@ -340,9 +378,9 @@ function startLogic()
 	var btnMsgBack = new MessageObject();
 	{
 		btnMsgBack.text = "BACK";
-		btnMsgBack.font = "normal bold 30px komika";
+		btnMsgBack.font = menuFont;
 		btnMsgBack.fontStyle = "red";
-		btnMsgBack.x = (canvas.width / 2) - (btnMsgBack.text.length * 7);
+		btnMsgBack.x = (canvas.width / 2) - ((btnMsgBack.text.length * fontHMenu) / 2);
 		btnMsgBack.y = 650;
 		btnMsgBack.visible = false;
 		btnMessages.push(btnMsgBack);
@@ -351,9 +389,9 @@ function startLogic()
 	var btnMsgSFX = new MessageObject();
 	{
 		btnMsgSFX.text = "SFX";
-		btnMsgSFX.font = "normal bold 30px komika";
+		btnMsgSFX.font = menuFont;
 		btnMsgSFX.fontStyle = "red";
-		btnMsgSFX.x = (canvas.width / 2) + 40;
+		btnMsgSFX.x = (canvas.width / 2) + 10;
 		btnMsgSFX.y = 450;
 		btnMsgSFX.visible = false;
 		btnMessages.push(btnMsgSFX);
@@ -362,9 +400,9 @@ function startLogic()
 	var btnMsgMusic = new MessageObject();
 	{
 		btnMsgMusic.text = "Music";
-		btnMsgMusic.font = "normal bold 30px komika";
+		btnMsgMusic.font = menuFont;
 		btnMsgMusic.fontStyle = "red";
-		btnMsgMusic.x = (canvas.width / 2) + 40;
+		btnMsgMusic.x = (canvas.width / 2) + 10;
 		btnMsgMusic.y = 550;
 		btnMsgMusic.visible = false;
 		btnMessages.push(btnMsgMusic);
@@ -446,7 +484,6 @@ function startLogic()
 			var tempY = chicken.y;
 
 			entityMove(clickLocation[0], clickLocation[1], chicken);
-			console.log(chicken.x, canvas.width);
 			if (hitTestCircle(nest, chicken))
 			{
 				chicken.x = tempX;
@@ -513,13 +550,13 @@ function startLogic()
 
 		endElement.visible = false;
 
-		timeElement.text = timeInSeconds + " seconds left";
+		timeElement.update();
 		timeElement.visible = true;
 
-		levelElement.text = "level: " + level;
+		levelElement.update();
 		levelElement.visible = true;
 
-		scoreElement.text = score + " worm smears";
+		scoreElement.update();
 		scoreElement.visible = true;
 
 		gameTimeInterval = window.setInterval(function ()
@@ -546,7 +583,7 @@ function startLogic()
 		else
 			endElement.text = timeInSeconds + " seconds left, the nest has fallen, you got " + score + " worms killed.";
 
-		endElement.x = canvas.offsetLeft + (canvas.width / 2) - (levelElement.text.length * 30);
+		endElement.update();
 		endElement.visible = true;
 		for (i = 0; i < worms.length; i ++)
 		{
@@ -819,7 +856,9 @@ function startLogic()
 	function renderScoreUI()
 	{
 		timeElement.text = timeInSeconds + " seconds left";
+		timeElement.update();
 		scoreElement.text = score + " worm smears";
+		scoreElement.update();
 
 		for (var i = 0; i < messages.length; i ++)
 		{
@@ -901,8 +940,8 @@ function startLogic()
 		}
 		renderButton(605);
 
-		renderCheckBox((canvas.width / 2) - 20, 430, SFX);
-		renderCheckBox((canvas.width / 2) - 20, 530, music);
+		renderCheckBox((canvas.width / 2) - 40, 425, SFX);
+		renderCheckBox((canvas.width / 2) - 40, 525, music);
 
 		for (var i = 0; i < btnMessages.length; i ++)
 		{
@@ -934,7 +973,7 @@ function startLogic()
 		//var xStart = ((canvas.width / 2) - (xSize / 2), yLocation);
 		ctx.save();
 
-		ctx.translate((canvas.width / 2) - (xSize), yLocation);
+		ctx.translate((canvas.width / 2) - (xSize) - 16, yLocation);
 		ctx.drawImage(image,
 				btnCap.srcX, btnCap.srcY,
 				btnCap.srcW, btnCap.srcH,
