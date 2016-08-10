@@ -44,6 +44,7 @@ function startLogic()
 			chicken_walk.removeEventListener("canplaythrough", loadHandler);
 
 			canvas.addEventListener("mousedown", mouseLocation);
+			window.addEventListener("keydown", keyPressed);
 			gameState = MENU;
 
 
@@ -61,6 +62,9 @@ function startLogic()
 	var score;
 	var timeInSeconds;
 	var level;
+	var powerUp;
+	var powerUpSmoother;
+	var boostDuration;
 
 	var fontHUI = 14;
 	var fontHMenu = 21;
@@ -77,6 +81,7 @@ function startLogic()
 	var musicRect = new simpleRect((canvas.width / 2) - 40, 525, 32, 32);
 
 	var gameTimeInterval;
+	var coolDownTimeInterval;
 
 	var sprites = [];
 	var spriteTiles = [[]];
@@ -86,6 +91,7 @@ function startLogic()
 	var btnMessages = [];
 
 	var clickLocation = [];
+	var spaceKeyCode = 32;
 
 	var newGame = true;
 
@@ -281,7 +287,7 @@ function startLogic()
 			range = range - worm.sprite.h;
 		}
 
-		var domain = getRandom(0, (!axis ? canvas.width : canvas.height));
+		var domain = getRandom(0, (! axis ? canvas.width : canvas.height));
 
 		if (axis)
 		{
@@ -309,12 +315,27 @@ function startLogic()
 		sprites.push(nest);
 	}
 
+	var nest = new SpriteObject();
+	{
+		nest.srcX = 128;
+		nest.srcY = 128;
+		nest.srcW = 64;
+		nest.srcH = 64;
+		nest.w = 64;
+		nest.h = 64;
+		nest.x = canvas.width / 2 - nest.halfWidth();
+		nest.y = canvas.height / 2 - nest.halfHeight();
+		nest.visible = false;
+		sprites.push(nest);
+	}
+
 	var eggObject = function ()
 	{
 		this.sprite = new SpriteObject();
 	};
 
-	function createEgg(x, y) {
+	function createEgg(x, y)
+	{
 		var egg = new eggObject();
 		{
 			egg.sprite.srcX = 160;
@@ -334,8 +355,8 @@ function startLogic()
 
 	function prepareEggs()
 	{
-		createEgg(10, -10);
-		createEgg(-10, 0);
+		createEgg(10, - 10);
+		createEgg(- 10, 0);
 		createEgg(10, 10);
 	}
 
@@ -486,13 +507,13 @@ function startLogic()
 			//draw chicken
 			drawEntity(nest);
 
-			for (i = 0; i < eggs.length; i++)
+			for (i = 0; i < eggs.length; i ++)
 			{
 				var egg = eggs[i];
 				drawEntity(egg.sprite);
 			}
 
-			for (i = 0; i < worms.length; i++)
+			for (i = 0; i < worms.length; i ++)
 			{
 				var worm = worms[i];
 				if (worm.state != worm.DEAD)
@@ -613,6 +634,8 @@ function startLogic()
 		score = 0;
 		timeInSeconds = 30;
 		level = 1;
+		powerUp = 0;
+		powerUpSmoother = 0;
 
 		endElement.visible = false;
 
@@ -639,7 +662,27 @@ function startLogic()
 			}
 		}, 1000);
 
-
+		coolDownTimer();
+	}
+	function coolDownTimer()
+	{
+		coolDownTimeInterval = window.setInterval(function ()
+		{
+			if (powerUpSmoother % 10 == 0)
+			{
+				if (powerUp != 10)
+				{
+					powerUp += 1;
+				}
+				else
+				{
+					console.log("boost up");
+					powerUpSmoother = 0;
+					clearInterval(coolDownTimeInterval);
+				}
+			}
+			powerUpSmoother += 1;
+		}, 100);
 	}
 
 	function endGame()
@@ -741,6 +784,29 @@ function startLogic()
 
 				spriteTiles[x].push(new spriteID(id, rotation));
 			}
+		}
+	}
+
+	function keyPressed(e)
+	{
+		console.log(e.keyCode);
+		if (e.keyCode == spaceKeyCode)
+		{
+			console.log("space pressed");
+			if (powerUp == 10)
+			{
+				console.log("boosting....");
+				chicken.speed = 8;
+				boostDuration = setTimeout(function ()
+				{
+					console.log("boost over");
+					chicken.speed = 4;
+					powerUp = 0;
+					coolDownTimer();
+				}, 3000);
+			}
+			else
+				console.log("can't boost");
 		}
 	}
 
