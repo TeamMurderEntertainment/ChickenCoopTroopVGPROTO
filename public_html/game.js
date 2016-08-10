@@ -180,7 +180,7 @@ function startLogic()
 
 	var chicken = new SpriteObject();
 	{
-		chicken.srcX = 32;
+		chicken.srcX = 0;
 		chicken.srcY = 64;
 		chicken.srcW = 64;
 		chicken.srcH = 64;
@@ -338,8 +338,8 @@ function startLogic()
 	{
 		var egg = new eggObject();
 		{
-			egg.sprite.srcX = 160;
-			egg.sprite.srcY = 96;
+			egg.sprite.srcX = 128;
+			egg.sprite.srcY = 32;
 			egg.sprite.srcW = 32;
 			egg.sprite.srcH = 32;
 			egg.sprite.w = 26;
@@ -373,8 +373,8 @@ function startLogic()
 
 	var btnCap = new SpriteObject();
 	{
-		btnCap.srcX = 0;
-		btnCap.srcY = 64;
+		btnCap.srcX = 162;
+		btnCap.srcY = 32;
 		btnCap.srcW = 8;
 		btnCap.srcH = 32;
 		btnCap.w = 16;
@@ -384,8 +384,8 @@ function startLogic()
 
 	var btnMid = new SpriteObject();
 	{
-		btnMid.srcX = 9;
-		btnMid.srcY = 64;
+		btnMid.srcX = 169;
+		btnMid.srcY = 32;
 		btnMid.srcW = 1;
 		btnMid.srcH = 32;
 		btnMid.w = 2;
@@ -395,8 +395,8 @@ function startLogic()
 
 	var chkBox = new SpriteObject();
 	{
-		chkBox.srcX = 16;
-		chkBox.srcY = 64;
+		chkBox.srcX = 176;
+		chkBox.srcY = 32;
 		chkBox.srcW = 16;
 		chkBox.srcH = 16;
 		chkBox.w = 32;
