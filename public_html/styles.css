@@ -2,3 +2,15 @@
 	src: url(fonts/KOMIKAX_.ttf);
 	font-family: komika;
 }
+@font-face{
+	src: url(fonts/NovaRound.ttf);
+	font-family: nova;
+}
+@font-face{
+	src: url(fonts/Cella.ttf);
+	font-family: cella;
+}
+@font-face{
+	src: url(fonts/Erika_Ormig.ttf);
+	font-family: erika;
+}
