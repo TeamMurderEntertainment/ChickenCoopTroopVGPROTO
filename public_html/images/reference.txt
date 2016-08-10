@@ -1,14 +1,18 @@
 bgDirt 0 0 32 32
-bgRock 32 0 32 32
+bgPebbles 32 0 32 32
 bgGrassEdge 64 0 32 32
 bgGrassCorner 96 0 32 32
 bgFenceEdge 128 0 32 32
 bgFenceCorner 160 0 32 32
+bgRock 0 32 32 32
 
 currentNothing 0 32 192 32
 
 buttonCap 0 64 8 32
 buttonMiddle 9 64 1 32
+
+checkboxeEmpty 16 64 16 16
+checkboxFull 16 80 16 16
 
 chicken 32 64 64 64
 chickenBoop 96 64 64 64
@@ -17,6 +21,9 @@ worm_0 0 128 32 64
 worm_1 32 128 32 64
 worm_2 64 128 32 64
 worm_3 96 128 32 64
+
+nest 128 128 64 64
+egg 96 160 32 32
 
 title 192 0 512 192
 
