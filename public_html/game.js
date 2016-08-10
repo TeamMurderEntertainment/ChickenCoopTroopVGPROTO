@@ -105,6 +105,7 @@ function startLogic()
 	var sprites = [];
 	var spriteTiles = [[]];
 	var worms = [];
+	var eggs = [];
 	var messages = [];
 	var btnMessages = [];
 
@@ -239,17 +240,17 @@ function startLogic()
 			range = range - worm.sprite.h;
 		}
 
-		var meow = getRandom(0, (!axis ? canvas.width : canvas.height));
+		var domain = getRandom(0, (!axis ? canvas.width : canvas.height));
 
 		if (axis)
 		{
 			worm.sprite.x = range;
-			worm.sprite.y = meow;
+			worm.sprite.y = domain;
 		}
 		else
 		{
 			worm.sprite.y = range;
-			worm.sprite.x = meow;
+			worm.sprite.x = domain;
 		}
 	}
 
@@ -265,6 +266,36 @@ function startLogic()
 		nest.y = canvas.height / 2 - nest.halfHeight();
 		nest.visible = false;
 		sprites.push(nest);
+	}
+
+	var eggObject = function ()
+	{
+		this.sprite = new SpriteObject();
+	};
+
+	function createEgg(x, y) {
+		var egg = new eggObject();
+		{
+			egg.sprite.srcX = 160;
+			egg.sprite.srcY = 96;
+			egg.sprite.srcW = 32;
+			egg.sprite.srcH = 32;
+			egg.sprite.w = 26;
+			egg.sprite.h = 26;
+			egg.sprite.visible = false;
+			sprites.push(egg.sprite);
+			eggs.push(egg);
+
+			egg.sprite.x = canvas.width / 2 - egg.sprite.halfWidth() + x;
+			egg.sprite.y = canvas.height / 2 - egg.sprite.halfHeight() + y;
+		}
+	}
+
+	function prepareEggs()
+	{
+		createEgg(10, -10);
+		createEgg(-10, 0);
+		createEgg(10, 10);
 	}
 
 	var bgTile = new SpriteObject();
@@ -414,6 +445,12 @@ function startLogic()
 			//draw chicken
 			drawEntity(nest);
 
+			for (i = 0; i < eggs.length; i++)
+			{
+				var egg = eggs[i];
+				drawEntity(egg.sprite);
+			}
+
 			for (i = 0; i < worms.length; i++)
 			{
 				var worm = worms[i];
@@ -430,9 +467,18 @@ function startLogic()
 						killWorm(worm);
 
 					if (hitTestRectangle(worm.sprite, nest))
-						gameState = GAMEEND;
-
-
+					{
+						killWorm(worm, false);
+						if (eggs.length > 0)
+						{
+							egg = eggs[eggs.length - 1];
+							crackEgg(egg);
+						}
+						if (eggs.length < 1)
+						{
+							gameState = GAMEEND;
+						}
+					}
 				}
 				drawEntity(worm.sprite);
 			}
@@ -470,12 +516,22 @@ function startLogic()
 		}
 	}
 
-	function killWorm(worm)
+	function killWorm(worm, kill)
 	{
-		score += worm.getScore();
-		worm.state = worm.DEAD;
-		worm.update();
-		setTimeout(removeWorm, 1000);
+		if (kill == undefined)
+			kill = true;
+
+		if (kill)
+		{
+			score += worm.getScore();
+			worm.state = worm.DEAD;
+			worm.update();
+			setTimeout(removeWorm, 1000);
+		}
+		else
+		{
+			removeWorm();
+		}
 
 		function removeWorm()
 		{
@@ -484,7 +540,17 @@ function startLogic()
 		}
 	}
 
+	function crackEgg(egg)
+	{
+		//future space for stuff
+		removeEgg();
 
+		function removeEgg()
+		{
+			removeObject(egg.sprite, sprites);
+			removeObject(egg, eggs);
+		}
+	}
 
 	function playGame()
 	{
@@ -492,6 +558,7 @@ function startLogic()
 		{
 			initGameUI();
 			genMap();
+			prepareEggs();
 			newGame = false;
 		}
 	}
@@ -549,15 +616,15 @@ function startLogic()
 		worms = [];
 	}
 
-	// dirt = 0
-	// rock = 1
-	// grass edge = 2
-	// grass corner = 3
-	// fence edge = 4
-	// fence corner = 5
-	// 
-	// rotation is 0-3
-	// 90*rotation clockwise
+// dirt = 0
+// rock = 1
+// grass edge = 2
+// grass corner = 3
+// fence edge = 4
+// fence corner = 5
+// 
+// rotation is 0-3
+// 90*rotation clockwise
 
 	function genMap()
 	{
@@ -743,10 +810,8 @@ function startLogic()
 
 	function drawEntity(entity)
 	{
-//		entityMove(locX, locY, entity);
-
 		ctx.save();
-		ctx.translate(entity.x + entity.halfWidth(), entity.y + entity.halfHeight());
+		ctx.translate(entity.center().x, entity.center().y);
 
 		ctx.rotate(Math.radians(entity.r - 90));
 		ctx.translate(-entity.halfWidth(), -entity.halfHeight());
