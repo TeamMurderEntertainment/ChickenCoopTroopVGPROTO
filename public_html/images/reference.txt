@@ -11,11 +11,13 @@ currentNothing 32 32 192 32
 buttonCap 0 64 8 32
 buttonMiddle 9 64 1 32
 
-checkboxeEmpty 16 64 16 16
+checkboxeEmpty 176 32 16 16
 checkboxFull 16 80 16 16
 
-chicken 32 64 64 64
-chickenBoop 96 64 64 64
+chicken 0 64 64 64
+chickenBoop 64 64 64 64
+
+speedBoost 96 64 64 64
 
 worm_0 0 128 32 64
 worm_1 32 128 32 64
@@ -23,7 +25,7 @@ worm_2 64 128 32 64
 worm_dead 96 128 32 64
 
 nest 128 128 64 64
-egg 96 160 32 32
+egg 128 32 32 32
 
 title 192 0 512 192
 
