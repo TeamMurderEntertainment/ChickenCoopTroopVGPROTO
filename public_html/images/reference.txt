@@ -17,7 +17,8 @@ checkboxFull 16 80 16 16
 chicken 0 64 64 64
 chickenBoop 64 64 64 64
 
-speedBoost 96 64 64 64
+speedBoostOff 192 128 64 64
+speedBoostOn 256 128 64 64
 
 worm_0 0 128 32 64
 worm_1 32 128 32 64
@@ -27,6 +28,6 @@ worm_dead 96 128 32 64
 nest 128 128 64 64
 egg 128 32 32 32
 
-title 192 0 512 192
+title 192 0 512 128
 
 menuBG 0 192 1024 768
