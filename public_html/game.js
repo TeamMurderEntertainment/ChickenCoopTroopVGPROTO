@@ -139,10 +139,32 @@ function startLogic()
 		chicken.w = 64;
 		chicken.h = 64;
 		chicken.x = canvas.width / 2 - chicken.halfWidth();
-		chicken.y = canvas.height / 2 + chicken.halfHeight()+10;
+		chicken.y = canvas.height / 2 + chicken.halfHeight() + 10;
 		chicken.r = 0;
 		chicken.speed = 4;
+		chicken.framesLeft = 5;
 		chicken.distance = 0;
+		chicken.state = .5;
+
+		chicken.update = function ()
+		{
+			chicken.srcX = chicken.state * this.srcW;
+		};
+
+		chicken.animateCycle = function ()
+		{
+			if (chicken.framesLeft == 0)
+			{
+				if (chicken.state == .5)
+					chicken.state = 1.5;
+				else
+					chicken.state = .5;
+
+				chicken.framesLeft = 10;
+			}
+			else
+				chicken.framesLeft -= 1;
+		};
 		chicken.visible = false;
 		sprites.push(chicken);
 	}
@@ -152,8 +174,9 @@ function startLogic()
 		this.startDistance = 0;
 		this.sprite = new SpriteObject();
 		this.NORMAL = [0, 2];
-		this.DEAD = [1, 2];
+		this.DEAD = [3, 2];
 		this.state = this.NORMAL;
+		this.framesLeft = 10;
 
 		this.update = function ()
 		{
@@ -164,6 +187,20 @@ function startLogic()
 		{
 			var score = getPercentage(this.sprite.distance, this.startDistance, false);
 			return Math.floor(score / 2) + 50;
+		};
+		this.animateCycle = function ()
+		{
+			if (this.framesLeft == 0)
+			{
+				if (this.state[0] == 2)
+					this.state[0] = 0;
+				else
+					this.state[0] += 1;
+
+				this.framesLeft = 10;
+			}
+			else
+				this.framesLeft -= 1;
 		};
 	};
 
@@ -373,6 +410,8 @@ function startLogic()
 				var worm = worms[i];
 				if (worm.state != worm.DEAD)
 				{
+					worm.animateCycle();
+					worm.update();
 					entityMove(nest.center().x, nest.center().y, worm.sprite);
 
 					if (worm.startDistance == 0)
@@ -384,14 +423,17 @@ function startLogic()
 					if (hitTestRectangle(worm.sprite, nest))
 						gameState = GAMEEND;
 
+
 				}
 				drawEntity(worm.sprite);
 			}
 
-			
+
 			var tempX = chicken.x;
 			var tempY = chicken.y;
+
 			entityMove(clickLocation[0], clickLocation[1], chicken);
+
 
 			if (hitTestCircle(nest, chicken))
 			{
@@ -399,6 +441,21 @@ function startLogic()
 				chicken.y = tempY;
 			}
 
+			var walkingChicken = false;
+			if (!isNaN(clickLocation[0]) && !isNaN(clickLocation[1]))
+			{
+				walkingChicken = true;
+				chicken.animateCycle();
+				chicken.update();
+			}
+
+			if (walkingChicken && SFX)
+				chicken_walk.play();
+			else
+			{
+				chicken_walk.pause();
+				chicken_walk.currentTime = 0;
+			}
 			drawEntity(chicken);
 			renderScoreUI();
 		}
