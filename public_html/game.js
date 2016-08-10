@@ -16,6 +16,12 @@ function startLogic()
 	chicken_walk.addEventListener("canplaythrough", loadHandler);
 	chicken_walk.load();
 	assetsToLoad.push(chicken_walk);
+	// SFX files
+	var menu_music = document.querySelector("#menu_music");
+	menu_music.addEventListener("canplaythrough", loadHandler);
+	menu_music.volume = 0.4;
+	menu_music.load();
+	assetsToLoad.push(menu_music);
 
 	// Sprite sheet
 	var image = new Image();
@@ -173,15 +179,14 @@ function startLogic()
 	{
 		this.startDistance = 0;
 		this.sprite = new SpriteObject();
-		this.NORMAL = [0, 2];
-		this.DEAD = [3, 2];
+		this.NORMAL = 0;
+		this.DEAD = 3;
 		this.state = this.NORMAL;
 		this.framesLeft = 10;
 
 		this.update = function ()
 		{
-			this.sprite.srcX = this.state[0] * this.sprite.srcW;
-			this.sprite.srcY = this.state[1] * this.sprite.srcH;
+			this.sprite.srcX = this.state * this.sprite.srcW;
 		};
 		this.getScore = function ()
 		{
@@ -192,10 +197,10 @@ function startLogic()
 		{
 			if (this.framesLeft == 0)
 			{
-				if (this.state[0] == 2)
-					this.state[0] = 0;
+				if (this.state == 2)
+					this.state = 0;
 				else
-					this.state[0] += 1;
+					this.state += 1;
 
 				this.framesLeft = 10;
 			}
@@ -210,9 +215,9 @@ function startLogic()
 		{
 			worm.sprite.srcY = 128;
 			worm.sprite.srcW = 32;
-			worm.sprite.srcH = 64;
+			worm.sprite.srcH = 63;
 			worm.sprite.w = 32;
-			worm.sprite.h = 64;
+			worm.sprite.h = 63;
 			worm.sprite.r = 0;
 			worm.sprite.speed = 2;
 			worm.sprite.distance = 0;
@@ -391,7 +396,11 @@ function startLogic()
 
 		//draw menu stuff
 		if (gameState == MENU)
+		{
 			renderMenu();
+			if (music)
+				menu_music.play();
+		}
 		if (gameState == OPTIONS)
 			renderOptions();
 		//draw map
@@ -652,12 +661,16 @@ function startLogic()
 		{
 			if (hitTestPoint(clickLocation[0], clickLocation[1], back))
 				gameState = MENU;
-
 			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
 				SFX = !SFX;
-
 			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
+			{
+				if (music)
+					menu_music.pause();
+				else
+					menu_music.play();
 				music = !music;
+			}
 		}
 		else if (gameState == PLAYING)
 		{
