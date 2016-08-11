@@ -17,12 +17,29 @@ function startLogic()
 	chicken_walk.volume = 0.5;
 	chicken_walk.load();
 	assetsToLoad.push(chicken_walk);
-	// SFX files
+
+	var squish = document.querySelector("#squish");
+	squish.addEventListener("canplaythrough", loadHandler);
+	squish.volume = 0.5;
+	squish.load();
+	assetsToLoad.push(squish);
+
 	var menu_music = document.querySelector("#menu_music");
 	menu_music.addEventListener("canplaythrough", loadHandler);
 	menu_music.volume = 0.4;
 	menu_music.load();
 	assetsToLoad.push(menu_music);
+
+	var button_sfx = document.querySelector("#button_sfx");
+	button_sfx.addEventListener("canplaythrough", loadHandler);
+	button_sfx.volume = 0.4;
+	button_sfx.load();
+	button_sfx.playCheck = function ()
+	{
+		if (SFX)
+			button_sfx.play();
+	};
+	assetsToLoad.push(button_sfx);
 
 	// Sprite sheet
 	var image = new Image();
@@ -43,6 +60,8 @@ function startLogic()
 
 			chicken_walk.removeEventListener("canplaythrough", loadHandler);
 			menu_music.removeEventListener("canplaythrough", loadHandler);
+			squish.removeEventListener("canplaythrough", loadHandler);
+			button_sfx.removeEventListener("canplaythrough", loadHandler);
 
 			canvas.addEventListener("mousedown", mouseLocation);
 			window.addEventListener("keydown", keyPressed);
@@ -610,6 +629,7 @@ function startLogic()
 
 		if (kill)
 		{
+			squish.play();
 			minScore += 50;
 			score += worm.getScore();
 			worm.state = worm.DEAD;
@@ -873,21 +893,30 @@ function startLogic()
 		}
 		if ((gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], play)) || gameState == GAMEEND)
 		{
+			button_sfx.playCheck();
 			newGame = true;
 			gameState = PLAYING;
 		}
 		else if (gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], options))
 		{
+			button_sfx.playCheck();
 			gameState = OPTIONS;
 		}
 		else if (gameState == OPTIONS)
 		{
 			if (hitTestPoint(clickLocation[0], clickLocation[1], back))
+			{
+				button_sfx.playCheck();
 				gameState = MENU;
+			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
+			{
 				SFX = !SFX;
+				button_sfx.playCheck();
+			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
 			{
+				button_sfx.playCheck();
 				if (music)
 					menu_music.pause();
 				else
