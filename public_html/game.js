@@ -3,14 +3,14 @@ function startLogic()
 	// canvas variable set up
 	var canvas = document.querySelector("canvas");
 	var ctx = canvas.getContext("2d");
-	
+
 	// loader variables
 	var assetsToLoad = [];
 	var assetsLoaded = 0;
 
 	// map size
-	var tileCountX = canvas.width/32;
-	var tileCountY = canvas.height/32;
+	var tileCountX = canvas.width / 32;
+	var tileCountY = canvas.height / 32;
 
 	console.log("Loading...");
 
@@ -173,94 +173,94 @@ function startLogic()
 
 	// text elements
 	{
-	var timeElement = new MessageObject();
-	{
-		timeElement.update = function ()
+		var timeElement = new MessageObject();
 		{
-			timeElement.text = timeInSeconds + " seconds left";
-			timeElement.x = canvas.offsetLeft + 30;
-		};
+			timeElement.update = function ()
+			{
+				timeElement.text = timeInSeconds + " seconds left";
+				timeElement.x = canvas.offsetLeft + 30;
+			};
 
-		timeElement.update();
-		timeElement.y = canvas.offsetTop + 30;
-		timeElement.font = UIFont;
-		timeElement.visible = false;
-		messages.push(timeElement);
-	}
+			timeElement.update();
+			timeElement.y = canvas.offsetTop + 30;
+			timeElement.font = UIFont;
+			timeElement.visible = false;
+			messages.push(timeElement);
+		}
 
-	var levelElement = new MessageObject();
-	{
-		levelElement.update = function ()
+		var levelElement = new MessageObject();
 		{
-			levelElement.text = "level: " + level;
-			levelElement.x = canvas.offsetLeft + (canvas.width / 2) - ((levelElement.text.length * fontHUI) / 2);
-		};
+			levelElement.update = function ()
+			{
+				levelElement.text = "level: " + level;
+				levelElement.x = canvas.offsetLeft + (canvas.width / 2) - ((levelElement.text.length * fontHUI) / 2);
+			};
 
-		levelElement.update();
-		levelElement.y = canvas.offsetTop + 30;
-		levelElement.font = UIFont;
-		levelElement.visible = false;
-		messages.push(levelElement);
-	}
+			levelElement.update();
+			levelElement.y = canvas.offsetTop + 30;
+			levelElement.font = UIFont;
+			levelElement.visible = false;
+			messages.push(levelElement);
+		}
 
-	var scoreElement = new MessageObject();
-	{
-		scoreElement.update = function ()
+		var scoreElement = new MessageObject();
 		{
-			scoreElement.text = "Score: " + score;
-			scoreElement.x = canvas.offsetLeft + canvas.width - (scoreElement.text.length * fontHUI) - 40;
-		};
+			scoreElement.update = function ()
+			{
+				scoreElement.text = "Score: " + score;
+				scoreElement.x = canvas.offsetLeft + canvas.width - (scoreElement.text.length * fontHUI) - 40;
+			};
 
-		scoreElement.update();
-		scoreElement.y = canvas.offsetTop + 30;
-		scoreElement.font = UIFont;
-		scoreElement.visible = false;
-		messages.push(scoreElement);
-	}
+			scoreElement.update();
+			scoreElement.y = canvas.offsetTop + 30;
+			scoreElement.font = UIFont;
+			scoreElement.visible = false;
+			messages.push(scoreElement);
+		}
 
-	var endElement = new MessageObject();
-	{
-		endElement.update = function ()
+		var endElement = new MessageObject();
 		{
-			endElement.x = canvas.offsetLeft + (canvas.width / 2) - ((endElement.text.length * fontHUI) / 2);
-		};
+			endElement.update = function ()
+			{
+				endElement.x = canvas.offsetLeft + (canvas.width / 2) - ((endElement.text.length * fontHUI) / 2);
+			};
 
-		endElement.update();
-		endElement.y = canvas.offsetTop + (canvas.height / 2) - 50;
-		endElement.font = UIFont;
-		endElement.visible = false;
-		messages.push(endElement);
+			endElement.update();
+			endElement.y = canvas.offsetTop + (canvas.height / 2) - 50;
+			endElement.font = UIFont;
+			endElement.visible = false;
+			messages.push(endElement);
+		}
 	}
-	}
-	
+
 	// menu sprites
 	{
-	var background = new SpriteObject();
-	{
-		background.srcY = 192;
-		background.srcW = 1024;
-		background.srcH = 768;
-		background.w = 1024;
-		background.h = 768;
-		background.visible = true;
-		sprites.push(background);
+		var background = new SpriteObject();
+		{
+			background.srcY = 192;
+			background.srcW = 1024;
+			background.srcH = 768;
+			background.w = 1024;
+			background.h = 768;
+			background.visible = true;
+			sprites.push(background);
+		}
+
+		var title = new SpriteObject();
+		{
+			title.srcX = 192;
+			title.srcW = 512;
+			title.srcH = 128;
+			title.w = 512;
+			title.h = 128;
+			title.x = canvas.width / 2 - title.halfWidth();
+			title.y = 20;
+			title.visible = true;
+			sprites.push(title);
+		}
 	}
 
-	var title = new SpriteObject();
-	{
-		title.srcX = 192;
-		title.srcW = 512;
-		title.srcH = 128;
-		title.w = 512;
-		title.h = 128;
-		title.x = canvas.width / 2 - title.halfWidth();
-		title.y = 20;
-		title.visible = true;
-		sprites.push(title);
-	}
-	}
-	
-	
+
 	var chicken = new SpriteObject();
 	{
 		chicken.srcX = 0;
@@ -327,7 +327,7 @@ function startLogic()
 				else if (this.state == 2)
 					this.ascend = false;
 
-				if (! this.ascend)
+				if (!this.ascend)
 					this.state -= 1;
 				else if (this.ascend)
 					this.state += 1;
@@ -430,7 +430,7 @@ function startLogic()
 		chkBox.h = 32;
 		chkBox.visible = true;
 	}
-	
+
 	// button text
 	var btnMsgPlay = new MessageObject();
 	{
@@ -536,13 +536,13 @@ function startLogic()
 			//draw chicken
 			drawEntity(nest);
 
-			for (i = 0; i < eggs.length; i ++)
+			for (i = 0; i < eggs.length; i++)
 			{
 				var egg = eggs[i];
 				drawEntity(egg.sprite);
 			}
 
-			for (i = 0; i < worms.length; i ++)
+			for (i = 0; i < worms.length; i++)
 			{
 				var worm = worms[i];
 				if (worm.state != worm.DEAD)
@@ -592,7 +592,7 @@ function startLogic()
 			}
 
 			var walkingChicken = false;
-			if (! isNaN(clickLocation[0]) && ! isNaN(clickLocation[1]))
+			if (!isNaN(clickLocation[0]) && !isNaN(clickLocation[1]))
 			{
 				walkingChicken = true;
 				chicken.animateCycle();
@@ -612,15 +612,15 @@ function startLogic()
 			drawEntity(powerUpFull);
 		}
 	}
-	
+
 	function prepareEggs()
 	{
 		eggs = [];
-		createEgg(10, - 10);
-		createEgg(- 10, 0);
+		createEgg(10, -10);
+		createEgg(-10, 0);
 		createEgg(10, 10);
 	}
-	
+
 	function createEgg(x, y)
 	{
 		var egg = new eggObject();
@@ -668,7 +668,7 @@ function startLogic()
 			range = range - worm.sprite.h;
 		}
 
-		var domain = getRandom(0, (! axis ? canvas.width : canvas.height));
+		var domain = getRandom(0, (!axis ? canvas.width : canvas.height));
 
 		if (axis)
 		{
@@ -692,8 +692,8 @@ function startLogic()
 		{
 			removeObject(egg, eggs);
 		}
-	}	
-	
+	}
+
 	function killWorm(worm, kill)
 	{
 		if (kill == undefined)
@@ -808,7 +808,7 @@ function startLogic()
 			newGame = false;
 		}
 	}
-	
+
 	function endGame()
 	{
 		if (worms.length == 0 || eggs.length == 0)
@@ -820,7 +820,7 @@ function startLogic()
 
 			endElement.update();
 			endElement.visible = true;
-			
+
 			worms = [];
 			clearInterval(coolDownTimeInterval);
 		}
@@ -838,6 +838,8 @@ function startLogic()
 	 * grass corner = 3
 	 * fence edge = 4
 	 * fence corner = 5
+	 * rock = 6
+	 * grass = 7
 	 */
 	function genMap()
 	{
@@ -850,19 +852,23 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 				id = 0;
+				rotation = getRandom(0, 3);
 
 				//level border in clockwise order from top left
-				if (y == 0)								// top side
+				if (y == 0)									// top side
+				{
 					id = EDGE;
+					rotation = 0;
+				}
 				if (x == tileCountX - 1)					// right side
 				{
 					id = EDGE;
@@ -905,7 +911,8 @@ function startLogic()
 				if (x > 1 && x < (tileCountX - 1) - 1)
 					if (y > 1 && y < (tileCountY - 1) - 1)
 						if (Math.random() > 0.95)
-							id = (Math.random() > 0.60 ? 1 : 6);
+						id = (Math.random() > 0.60 ? 1 : 7);
+
 
 				spriteTiles[x].push(new spriteID(id, rotation));
 			}
@@ -975,7 +982,7 @@ function startLogic()
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
 			{
-				SFX = ! SFX;
+				SFX = !SFX;
 				button_sfx.playCheck();
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
@@ -987,7 +994,7 @@ function startLogic()
 				else
 					menu_music.play();
 
-				music = ! music;
+				music = !music;
 			}
 		}
 		else if (gameState == PLAYING)
@@ -1017,7 +1024,7 @@ function startLogic()
 	 */
 	function mouseMoved(e)
 	{
-		if (! buttonPressed(e))
+		if (!buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
 		}
@@ -1054,7 +1061,7 @@ function startLogic()
 	 */
 	function entityMove(x, y, entity)
 	{
-		if (! isNaN(x) && ! isNaN(y))
+		if (!isNaN(x) && !isNaN(y))
 		{
 			var dx = entity.x + entity.halfWidth() - x;
 			var dy = entity.y + entity.halfHeight() - y;
@@ -1092,7 +1099,7 @@ function startLogic()
 		if (entity.r != 0)
 			ctx.rotate(Math.radians(entity.r - 90));
 
-		ctx.translate(- entity.halfWidth(), - entity.halfHeight());
+		ctx.translate(-entity.halfWidth(), -entity.halfHeight());
 
 		ctx.drawImage(image,
 				entity.srcX, //srcX			
@@ -1155,16 +1162,16 @@ function startLogic()
 
 		renderMsg(btnMessages);
 	}
-	
+
 	/**
 	 * renders the BG of the game screen by reading an array representing the
 	 * tiles and their orientation
 	 */
 	function renderMap()
 	{
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 
 				var tempX = 0;
@@ -1179,14 +1186,14 @@ function startLogic()
 						break;
 					case 1:
 						tempX = 0;
-						tempY = - 1;
+						tempY = -1;
 						break;
 					case 2:
-						tempX = - 1;
-						tempY = - 1;
+						tempX = -1;
+						tempY = -1;
 						break;
 					case 3:
-						tempX = - 1;
+						tempX = -1;
 						tempY = 0;
 						break;
 				}
@@ -1196,7 +1203,7 @@ function startLogic()
 
 				ctx.rotate(((90 * spriteTiles[x][y].rotation) * Math.PI) / 180);
 				ctx.drawImage(image,
-						spriteTiles[x][y].id * bgTile.srcX, bgTile.srcY,
+						(spriteTiles[x][y].id % 6) * bgTile.srcX, Math.floor(spriteTiles[x][y].id / 6)* bgTile.h ,
 						bgTile.srcW, bgTile.srcH,
 						(tempX * 32), (tempY * 32),
 						bgTile.w, bgTile.h);
@@ -1204,7 +1211,7 @@ function startLogic()
 			}
 		}
 	}
-	
+
 	/**
 	 * renders all MessageObjects in the given array based on each objects
 	 * proporties
@@ -1212,7 +1219,7 @@ function startLogic()
 	 */
 	function renderMsg(msgs)
 	{
-		for (var i = 0; i < msgs.length; i ++)
+		for (var i = 0; i < msgs.length; i++)
 		{
 			var msg = msgs[i];
 			if (msg.visible)
@@ -1233,7 +1240,7 @@ function startLogic()
 	 */
 	function renderSprites(spritesArray)
 	{
-		for (var i = 0; i < spritesArray.length; i ++)
+		for (var i = 0; i < spritesArray.length; i++)
 		{
 
 			var sprite = spritesArray[i];
