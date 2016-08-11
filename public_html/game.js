@@ -423,10 +423,10 @@ function startLogic()
 
 	var btnCap = new SpriteObject();
 	{
-		btnCap.srcX = 160;
-		btnCap.srcY = 32;
-		btnCap.srcW = 8;
-		btnCap.srcH = 32;
+		btnCap.srcX = 320;
+		btnCap.srcY = 128;
+		btnCap.srcW = 16;
+		btnCap.srcH = 64;
 		btnCap.w = 16;
 		btnCap.h = 64;
 		btnCap.visible = false;
@@ -434,10 +434,10 @@ function startLogic()
 
 	var btnMid = new SpriteObject();
 	{
-		btnMid.srcX = 169;
-		btnMid.srcY = 32;
-		btnMid.srcW = 1;
-		btnMid.srcH = 32;
+		btnMid.srcX = 329;
+		btnMid.srcY = 128;
+		btnMid.srcW = 2;
+		btnMid.srcH = 64;
 		btnMid.w = 2;
 		btnMid.h = 64;
 		btnMid.visible = false;
@@ -445,10 +445,10 @@ function startLogic()
 
 	var chkBox = new SpriteObject();
 	{
-		chkBox.srcX = 176;
-		chkBox.srcY = 32;
-		chkBox.srcW = 16;
-		chkBox.srcH = 16;
+		chkBox.srcX = 352;
+		chkBox.srcY = 128;
+		chkBox.srcW = 32;
+		chkBox.srcH = 32;
 		chkBox.w = 32;
 		chkBox.h = 32;
 		chkBox.visible = true;
@@ -1179,7 +1179,7 @@ function startLogic()
 	function renderCheckBox(x, y, checked)
 	{
 		ctx.drawImage(image,
-				chkBox.srcX, (checked ? chkBox.srcY + 16 : chkBox.srcY),
+				chkBox.srcX, (checked ? chkBox.srcY + 32 : chkBox.srcY),
 				chkBox.srcW, chkBox.srcH,
 				x, y,
 				chkBox.w, chkBox.h
