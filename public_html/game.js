@@ -24,6 +24,17 @@ function startLogic()
 	squish.load();
 	assetsToLoad.push(squish);
 
+	var egg_cracking = document.querySelector("#egg_cracking");
+	egg_cracking.addEventListener("canplaythrough", loadHandler);
+	egg_cracking.volume = 0.3;
+	egg_cracking.load();
+	egg_cracking.playCheck = function ()
+	{
+		if (SFX)
+			egg_cracking.play();
+	};
+	assetsToLoad.push(egg_cracking);
+
 	var menu_music = document.querySelector("#menu_music");
 	menu_music.addEventListener("canplaythrough", loadHandler);
 	menu_music.volume = 0.4;
@@ -62,6 +73,7 @@ function startLogic()
 			menu_music.removeEventListener("canplaythrough", loadHandler);
 			squish.removeEventListener("canplaythrough", loadHandler);
 			button_sfx.removeEventListener("canplaythrough", loadHandler);
+			egg_cracking.removeEventListener("canplaythrough", loadHandler);
 
 			canvas.addEventListener("mousedown", mouseLocation);
 			window.addEventListener("keydown", keyPressed);
@@ -650,6 +662,7 @@ function startLogic()
 
 	function crackEgg(egg)
 	{
+		egg_cracking.playCheck();
 		//future space for stuff
 		removeEgg();
 
