@@ -173,9 +173,9 @@ function startLogic()
 	{
 		title.srcX = 192;
 		title.srcW = 512;
-		title.srcH = 192;
+		title.srcH = 128;
 		title.w = 512;
-		title.h = 192;
+		title.h = 128;
 		title.x = canvas.width / 2 - title.halfWidth();
 		title.y = 20;
 		title.visible = true;
@@ -319,18 +319,32 @@ function startLogic()
 		sprites.push(nest);
 	}
 
-	var nest = new SpriteObject();
+	var powerUpGray = new SpriteObject();
 	{
-		nest.srcX = 128;
-		nest.srcY = 128;
-		nest.srcW = 64;
-		nest.srcH = 64;
-		nest.w = 64;
-		nest.h = 64;
-		nest.x = canvas.width / 2 - nest.halfWidth();
-		nest.y = canvas.height / 2 - nest.halfHeight();
-		nest.visible = false;
-		sprites.push(nest);
+		powerUpGray.srcX = 192;
+		powerUpGray.srcY = 128;
+		powerUpGray.srcW = 64;
+		powerUpGray.srcH = 64;
+		powerUpGray.w = 64;
+		powerUpGray.h = 64;
+		powerUpGray.x = 30;
+		powerUpGray.y = canvas.height - powerUpGray.h - 30;
+		powerUpGray.visible = false;
+		sprites.push(powerUpGray);
+	}
+
+	var powerUpFull = new SpriteObject();
+	{
+		powerUpFull.srcX = 256;
+		powerUpFull.srcY = 128;
+		powerUpFull.srcW = 64;
+		powerUpFull.srcH = 64;
+		powerUpFull.w = 64;
+		powerUpFull.h = 64;
+		powerUpFull.x = 30;
+		powerUpFull.y = canvas.height - powerUpGray.h - 30;
+		powerUpFull.visible = false;
+		sprites.push(powerUpFull);
 	}
 
 	var eggObject = function ()
@@ -584,6 +598,8 @@ function startLogic()
 			}
 			drawEntity(chicken);
 			renderScoreUI();
+			drawEntity(powerUpGray);
+			drawEntity(powerUpFull);
 		}
 	}
 
@@ -644,6 +660,8 @@ function startLogic()
 		powerUp = 0;
 		powerUpSmoother = 0;
 
+		powerUpGray.visible = true;
+
 		endElement.visible = false;
 
 		timeElement.update();
@@ -661,8 +679,6 @@ function startLogic()
 
 			if (timeInSeconds == 0)
 			{
-				clearTimeout(wormTimeout);
-				clearInterval(gameTimeInterval);
 				gameState = GAMEEND;
 			}
 		}, 1000);
@@ -695,20 +711,22 @@ function startLogic()
 	{
 		coolDownTimeInterval = window.setInterval(function ()
 		{
-			if (powerUpSmoother % 10 == 0)
+			var size = (powerUp / 100) * powerUpFull.srcW;
+
+			powerUpFull.srcY = powerUpGray.srcY;
+			powerUpFull.srcH = size;
+			powerUpFull.h = size;
+			powerUpFull.y = powerUpGray.y;
+			if (powerUp != 100)
 			{
-				if (powerUp != 10)
-				{
-					powerUp += 1;
-				}
-				else
-				{
-					console.log("boost up");
-					powerUpSmoother = 0;
-					clearInterval(coolDownTimeInterval);
-				}
+				powerUp += 1;
 			}
-			powerUpSmoother += 1;
+			else
+			{
+				clearInterval(coolDownTimeInterval);
+			}
+
+
 		}, 100);
 	}
 
@@ -717,9 +735,9 @@ function startLogic()
 		if (worms.length == 0 || eggs.length == 0)
 		{
 			if (timeInSeconds == 0)
-				endElement.text = "Times up, you got " + score + " worms killed.";
+				endElement.text = "Times up, you got " + score + " points for killing worms.";
 			else
-				endElement.text = timeInSeconds + " seconds left, the nest has fallen, you got " + score + " worms killed.";
+				endElement.text = "The nest has fallen, you got " + score + " points for killing worms.";
 
 			endElement.update();
 			endElement.visible = true;
@@ -730,8 +748,10 @@ function startLogic()
 
 			}
 			worms = [];
+			clearInterval(coolDownTimeInterval);
 		}
 
+		clearTimeout(wormTimeout);
 		clearInterval(gameTimeInterval);
 	}
 
@@ -822,20 +842,16 @@ function startLogic()
 	{
 		if (e.keyCode == spaceKeyCode)
 		{
-			if (powerUp == 10)
+			if (powerUp == 100 && chicken.speed == 4)
 			{
-				console.log("boosting....");
 				chicken.speed = 8;
 				boostDuration = setTimeout(function ()
 				{
-					console.log("boost over");
 					chicken.speed = 4;
 					powerUp = 0;
 					coolDownTimer();
 				}, 3000);
 			}
-			else
-				console.log("can't boost");
 		}
 	}
 
@@ -953,7 +969,9 @@ function startLogic()
 		ctx.save();
 		ctx.translate(entity.center().x, entity.center().y);
 
-		ctx.rotate(Math.radians(entity.r - 90));
+		if (entity.r != 0)
+			ctx.rotate(Math.radians(entity.r - 90));
+
 		ctx.translate(-entity.halfWidth(), -entity.halfHeight());
 
 		ctx.drawImage(image,
