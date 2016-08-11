@@ -97,10 +97,19 @@ function startLogic()
 			canvas.addEventListener("mousedown", mouseLocation);
 			canvas.addEventListener("mouseup", mouseReset);
 			window.addEventListener("keydown", keyPressed);
-			gameState = MENU;
 
-
+			if (typeof loadingTimer == "undefined")
+				gameState = MENU;
 		}
+	}
+
+	var loadingTimer = window.setTimeout(splashHandler, 2000);
+
+	function splashHandler()
+	{
+		if (assetsLoaded == assetsToLoad.length)
+			gameState = MENU;
+		window.clearTimeout(loadingTimer);
 	}
 
 	// Gamestates
@@ -164,6 +173,7 @@ function startLogic()
 		var eggs = [];
 		var messages = [];
 		var btnMessages = [];
+		var splashMessages = [];
 	}
 
 	// input variables
@@ -231,6 +241,28 @@ function startLogic()
 			endElement.font = UIFont;
 			endElement.visible = false;
 			messages.push(endElement);
+		}
+
+		var teamElement = new MessageObject();
+		{
+			teamElement.text = "TEAM";
+			teamElement.font = menuFont;
+			teamElement.fontStyle = "red";
+			teamElement.x = ((canvas.width / 2) - ((teamElement.text.length * fontHMenu) / 2) -50);
+			teamElement.y = 350;
+			teamElement.visible = false;
+			splashMessages.push(teamElement);
+		}
+
+		var murderElement = new MessageObject();
+		{
+			murderElement.text = "MURDER";
+			murderElement.font = menuFont;
+			murderElement.fontStyle = "red";
+			murderElement.x = ((canvas.width / 2) - ((murderElement.text.length * fontHMenu) / 2)+20);
+			murderElement.y = 400;
+			murderElement.visible = false;
+			splashMessages.push(murderElement);
 		}
 	}
 
@@ -491,8 +523,10 @@ function startLogic()
 		}
 	}
 
-	// determins which game state were in and which functions to call each frame
-	// then calls render
+	/**
+	 * determins which game state were in and which functions to call each frame
+	 * then calls render
+	 */
 	function update()
 	{
 		window.requestAnimationFrame(update);
@@ -519,9 +553,16 @@ function startLogic()
 		render();
 	}
 
+	/**
+	 * runs all appropriate render functions depending on what state the game is in
+	 */
 	function render()
 	{
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		//draw menu stuff
+		if (gameState == LOADING)
+			showLoading();
 
 		//draw menu stuff
 		if (gameState == MENU)
@@ -551,14 +592,22 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * clears eggs array, and creates new eggs in the corrects spots
+	 */
 	function prepareEggs()
 	{
 		eggs = [];
-		createEgg(10, -10);
-		createEgg(-10, 0);
+		createEgg(10, - 10);
+		createEgg(- 10, 0);
 		createEgg(10, 10);
 	}
 
+	/**
+	 * creates a new egg at cords x,y and adds it do the eggs array
+	 * @param {type} x x location of egg
+	 * @param {type} y y location of egg
+	 */
 	function createEgg(x, y)
 	{
 		var egg = new eggObject();
@@ -577,6 +626,10 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * creates a new worm at a random location off screen on ether 4 sides
+	 * and adds them to the worm array
+	 */
 	function createWorm()
 	{
 		var worm = new wormObject();
@@ -606,7 +659,7 @@ function startLogic()
 			range = range - worm.sprite.h;
 		}
 
-		var domain = getRandom(0, (!axis ? canvas.width : canvas.height));
+		var domain = getRandom(0, (! axis ? canvas.width : canvas.height));
 
 		if (axis)
 		{
@@ -620,6 +673,12 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * moves the given worm object towards the nest, then checks if it hits
+	 * the chicken, and kills it if it does, then checks if it hits the nest
+	 * and cracks an egg
+	 * @param {SpriteObject} worm worm to be moved
+	 */
 	function calcWorm(worm)
 	{
 		if (worm.state != worm.DEAD)
@@ -643,13 +702,14 @@ function startLogic()
 					var egg = eggs[eggs.length - 1];
 					crackEgg(egg);
 				}
-
-				if (eggs.length < 1)
-					gameState = GAMEEND;
 			}
 		}
 	}
 
+	/**
+	 * moves the chicken based on the current clickLocation and checks to make
+	 * sure it stays on screen, and can't move over the nest
+	 */
 	function calcChicken()
 	{
 		var tempX = chicken.x;
@@ -688,6 +748,10 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * removes the given egg from the eggs array, playing sound of they are on
+	 * @param {SpriteObject} egg the egg to destroy
+	 */
 	function crackEgg(egg)
 	{
 		egg_cracking.playCheck();
@@ -700,12 +764,18 @@ function startLogic()
 		}
 	}
 
-	function killWorm(worm, kill)
+	/**
+	 * adds points and sets animate to dead worm, after 1 second removes the 
+	 * given worm from the worms array, playing sound of they are on
+	 * @param {SpriteObject} worm the worm to destroy
+	 * @param {Boolean} chickenKilled true if chicken killed it
+	 */
+	function killWorm(worm, chickenKilled)
 	{
-		if (kill == undefined)
-			kill = true;
+		if (chickenKilled == undefined)
+			chickenKilled = true;
 
-		if (kill)
+		if (chickenKilled)
 		{
 			squish.play();
 			minScore += 50;
@@ -725,6 +795,9 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * initilizes the UI, run ONCE at the START of each game or level
+	 */
 	function initGameUI()
 	{
 		score = 0;
@@ -761,6 +834,14 @@ function startLogic()
 		coolDownTimer();
 	}
 
+	/**
+	 * sets the timer for the next worm based on how well the player is doing
+	 * calls itself
+	 * 
+	 * minScore is 50 times worm kills
+	 * timeToNextWorm is the last timer, updated to the new timer
+	 * (100 - (timeToNextWorm / (score - minScore) * 100) * 20)
+	 */
 	function wormTimer()
 	{
 		wormTimeout = window.setTimeout(function ()
@@ -781,6 +862,10 @@ function startLogic()
 		}, timeToNextWorm);
 	}
 
+	/**
+	 * tracks the cooldown before you can use the powerUp next
+	 * doubles as the math for what numbers to use when you render the images
+	 */
 	function coolDownTimer()
 	{
 		coolDownTimeInterval = window.setInterval(function ()
@@ -804,18 +889,27 @@ function startLogic()
 		}, 100);
 	}
 
+	/**
+	 * starts music when the game is loading
+	 */
 	function runLoading()
 	{
 		if (music)
 			menu_music.play();
 	}
 
+	/**
+	 * runs the calculations when the game is playing
+	 */
 	function playGame()
 	{
 		for (i = 0; i < worms.length; i ++)
 			calcWorm(worms[i]);
 
 		calcChicken();
+
+		if (eggs.length < 1)
+			gameState = GAMEEND;
 
 		if (newGame)
 		{
@@ -829,6 +923,10 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * runs calculations to finish the game once it is ending and displays the 
+	 * end elements
+	 */
 	function endGame()
 	{
 		for (i = 0; i < worms.length; i ++)
@@ -877,13 +975,13 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for (var x = 0; x < tileCountX; x++)
+		for (var x = 0; x < tileCountX; x ++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for (var y = 0; y < tileCountY; y++)
+			for (var y = 0; y < tileCountY; y ++)
 			{
 				id = 0;
 				rotation = getRandom(0, 3);
@@ -936,7 +1034,7 @@ function startLogic()
 				if (x >= 1 && x <= (tileCountX - 1) - 1)
 					if (y >= 1 && y <= (tileCountY - 1) - 1)
 						if (Math.random() > 0.9)
-						id = (Math.random() > 0.5 ? 1 : 7);
+							id = (Math.random() > 0.5 ? 1 : 7);
 
 
 				spriteTiles[x].push(new spriteID(id, rotation));
@@ -1008,7 +1106,7 @@ function startLogic()
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
 			{
-				SFX = !SFX;
+				SFX = ! SFX;
 				button_sfx.playCheck();
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
@@ -1020,7 +1118,7 @@ function startLogic()
 				else
 					menu_music.play();
 
-				music = !music;
+				music = ! music;
 			}
 		}
 		else if (gameState == PLAYING)
@@ -1050,7 +1148,7 @@ function startLogic()
 	 */
 	function mouseMoved(e)
 	{
-		if (!buttonPressed(e))
+		if (! buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
 		}
@@ -1087,7 +1185,7 @@ function startLogic()
 	 */
 	function entityMove(x, y, entity)
 	{
-		if (!isNaN(x) && !isNaN(y))
+		if (! isNaN(x) && ! isNaN(y))
 		{
 			var dx = entity.x + entity.halfWidth() - x;
 			var dy = entity.y + entity.halfHeight() - y;
@@ -1125,7 +1223,7 @@ function startLogic()
 		if (entity.r != 0)
 			ctx.rotate(Math.radians(entity.r - 90));
 
-		ctx.translate(-entity.halfWidth(), -entity.halfHeight());
+		ctx.translate(- entity.halfWidth(), - entity.halfHeight());
 
 		ctx.drawImage(image,
 				entity.srcX, //srcX			
@@ -1135,6 +1233,19 @@ function startLogic()
 				entity.w, entity.h);
 
 		ctx.restore();
+	}
+
+	/**
+	 * shows splash screen
+	 */
+	function showLoading()
+	{
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.stroke();
+		teamElement.visible = true;
+		murderElement.visible = true;
+		renderMsg(splashMessages);
 	}
 
 	/**
@@ -1195,9 +1306,9 @@ function startLogic()
 	 */
 	function renderMap()
 	{
-		for (var x = 0; x < tileCountX; x++)
+		for (var x = 0; x < tileCountX; x ++)
 		{
-			for (var y = 0; y < tileCountY; y++)
+			for (var y = 0; y < tileCountY; y ++)
 			{
 
 				var tempX = 0;
@@ -1212,14 +1323,14 @@ function startLogic()
 						break;
 					case 1:
 						tempX = 0;
-						tempY = -1;
+						tempY = - 1;
 						break;
 					case 2:
-						tempX = -1;
-						tempY = -1;
+						tempX = - 1;
+						tempY = - 1;
 						break;
 					case 3:
-						tempX = -1;
+						tempX = - 1;
 						tempY = 0;
 						break;
 				}
@@ -1229,7 +1340,7 @@ function startLogic()
 
 				ctx.rotate(((90 * spriteTiles[x][y].rotation) * Math.PI) / 180);
 				ctx.drawImage(image,
-						(spriteTiles[x][y].id % 6) * bgTile.srcX, Math.floor(spriteTiles[x][y].id / 6)* bgTile.h ,
+						(spriteTiles[x][y].id % 6) * bgTile.srcX, Math.floor(spriteTiles[x][y].id / 6) * bgTile.h,
 						bgTile.srcW, bgTile.srcH,
 						(tempX * 32), (tempY * 32),
 						bgTile.w, bgTile.h);
@@ -1245,7 +1356,7 @@ function startLogic()
 	 */
 	function renderMsg(msgs)
 	{
-		for (var i = 0; i < msgs.length; i++)
+		for (var i = 0; i < msgs.length; i ++)
 		{
 			var msg = msgs[i];
 			if (msg.visible)
@@ -1266,7 +1377,7 @@ function startLogic()
 	 */
 	function renderSprites(spritesArray)
 	{
-		for (var i = 0; i < spritesArray.length; i++)
+		for (var i = 0; i < spritesArray.length; i ++)
 		{
 
 			var sprite = spritesArray[i];
