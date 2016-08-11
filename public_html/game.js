@@ -864,7 +864,7 @@ function startLogic()
 				if (x > 1 && x < (tileCountX - 1) - 1)
 					if (y > 1 && y < (tileCountY - 1) - 1)
 						if (Math.random() > 0.95)
-							id = 1;
+							id = (Math.random() > 0.60 ? 1 : 6);
 
 				spriteTiles[x].push(new spriteID(id, rotation));
 			}
