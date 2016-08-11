@@ -3,14 +3,14 @@ function startLogic()
 	// canvas variable set up
 	var canvas = document.querySelector("canvas");
 	var ctx = canvas.getContext("2d");
-	
+
 	// loader variables
 	var assetsToLoad = [];
 	var assetsLoaded = 0;
 
 	// map size
-	var tileCountX = canvas.width/32;
-	var tileCountY = canvas.height/32;
+	var tileCountX = canvas.width / 32;
+	var tileCountY = canvas.height / 32;
 
 	console.log("Loading...");
 
@@ -95,6 +95,7 @@ function startLogic()
 			egg_cracking.removeEventListener("canplaythrough", loadHandler);
 
 			canvas.addEventListener("mousedown", mouseLocation);
+			canvas.addEventListener("mouseup", mouseReset);
 			window.addEventListener("keydown", keyPressed);
 			gameState = MENU;
 
@@ -173,217 +174,190 @@ function startLogic()
 
 	// text elements
 	{
-	var timeElement = new MessageObject();
-	{
-		timeElement.update = function ()
+		var timeElement = new MessageObject();
 		{
-			timeElement.text = timeInSeconds + " seconds left";
-			timeElement.x = canvas.offsetLeft + 30;
-		};
+			timeElement.update = function ()
+			{
+				timeElement.text = timeInSeconds + " seconds left";
+				timeElement.x = canvas.offsetLeft + 30;
+			};
 
-		timeElement.update();
-		timeElement.y = canvas.offsetTop + 30;
-		timeElement.font = UIFont;
-		timeElement.visible = false;
-		messages.push(timeElement);
-	}
+			timeElement.update();
+			timeElement.y = canvas.offsetTop + 30;
+			timeElement.font = UIFont;
+			timeElement.visible = false;
+			messages.push(timeElement);
+		}
 
-	var levelElement = new MessageObject();
-	{
-		levelElement.update = function ()
+		var levelElement = new MessageObject();
 		{
-			levelElement.text = "level: " + level;
-			levelElement.x = canvas.offsetLeft + (canvas.width / 2) - ((levelElement.text.length * fontHUI) / 2);
-		};
+			levelElement.update = function ()
+			{
+				levelElement.text = "level: " + level;
+				levelElement.x = canvas.offsetLeft + (canvas.width / 2) - ((levelElement.text.length * fontHUI) / 2);
+			};
 
-		levelElement.update();
-		levelElement.y = canvas.offsetTop + 30;
-		levelElement.font = UIFont;
-		levelElement.visible = false;
-		messages.push(levelElement);
-	}
+			levelElement.update();
+			levelElement.y = canvas.offsetTop + 30;
+			levelElement.font = UIFont;
+			levelElement.visible = false;
+			messages.push(levelElement);
+		}
 
-	var scoreElement = new MessageObject();
-	{
-		scoreElement.update = function ()
+		var scoreElement = new MessageObject();
 		{
-			scoreElement.text = "Score: " + score;
-			scoreElement.x = canvas.offsetLeft + canvas.width - (scoreElement.text.length * fontHUI) - 40;
-		};
+			scoreElement.update = function ()
+			{
+				scoreElement.text = "Score: " + score;
+				scoreElement.x = canvas.offsetLeft + canvas.width - (scoreElement.text.length * fontHUI) - 40;
+			};
 
-		scoreElement.update();
-		scoreElement.y = canvas.offsetTop + 30;
-		scoreElement.font = UIFont;
-		scoreElement.visible = false;
-		messages.push(scoreElement);
-	}
+			scoreElement.update();
+			scoreElement.y = canvas.offsetTop + 30;
+			scoreElement.font = UIFont;
+			scoreElement.visible = false;
+			messages.push(scoreElement);
+		}
 
-	var endElement = new MessageObject();
-	{
-		endElement.update = function ()
+		var endElement = new MessageObject();
 		{
-			endElement.x = canvas.offsetLeft + (canvas.width / 2) - ((endElement.text.length * fontHUI) / 2);
-		};
+			endElement.update = function ()
+			{
+				endElement.x = canvas.offsetLeft + (canvas.width / 2) - ((endElement.text.length * fontHUI) / 2);
+			};
 
-		endElement.update();
-		endElement.y = canvas.offsetTop + (canvas.height / 2) - 50;
-		endElement.font = UIFont;
-		endElement.visible = false;
-		messages.push(endElement);
+			endElement.update();
+			endElement.y = canvas.offsetTop + (canvas.height / 2) - 50;
+			endElement.font = UIFont;
+			endElement.visible = false;
+			messages.push(endElement);
+		}
 	}
-	}
-	
+
 	// menu sprites
 	{
-	var background = new SpriteObject();
-	{
-		background.srcY = 192;
-		background.srcW = 1024;
-		background.srcH = 768;
-		background.w = 1024;
-		background.h = 768;
-		background.visible = true;
-		sprites.push(background);
-	}
-
-	var title = new SpriteObject();
-	{
-		title.srcX = 192;
-		title.srcW = 512;
-		title.srcH = 128;
-		title.w = 512;
-		title.h = 128;
-		title.x = canvas.width / 2 - title.halfWidth();
-		title.y = 20;
-		title.visible = true;
-		sprites.push(title);
-	}
-	}
-	
-	
-	var chicken = new SpriteObject();
-	{
-		chicken.srcX = 0;
-		chicken.srcY = 64;
-		chicken.srcW = 64;
-		chicken.srcH = 64;
-		chicken.w = 64;
-		chicken.h = 64;
-		chicken.x = canvas.width / 2 - chicken.halfWidth();
-		chicken.y = canvas.height / 2 + chicken.halfHeight() + 10;
-		chicken.r = 0;
-		chicken.speed = 4;
-		chicken.framesLeft = 5;
-		chicken.distance = 0;
-		chicken.state = 0;
-
-		chicken.update = function ()
+		var background = new SpriteObject();
 		{
-			chicken.srcX = chicken.state * this.srcW;
-		};
+			background.srcY = 192;
+			background.srcW = 1024;
+			background.srcH = 768;
+			background.w = 1024;
+			background.h = 768;
+			background.visible = true;
+			sprites.push(background);
+		}
 
-		chicken.animateCycle = function ()
+		var title = new SpriteObject();
 		{
-			if (chicken.framesLeft == 0)
+			title.srcX = 192;
+			title.srcW = 512;
+			title.srcH = 128;
+			title.w = 512;
+			title.h = 128;
+			title.x = canvas.width / 2 - title.halfWidth();
+			title.y = 20;
+			title.visible = true;
+			sprites.push(title);
+		}
+	}
+
+	// Entities
+	{
+		var chicken = new SpriteObject();
+		{
+			chicken.srcX = 0;
+			chicken.srcY = 64;
+			chicken.srcW = 64;
+			chicken.srcH = 64;
+			chicken.w = 64;
+			chicken.h = 64;
+			chicken.x = canvas.width / 2 - chicken.halfWidth();
+			chicken.y = canvas.height / 2 + chicken.halfHeight() + 10;
+			chicken.r = 0;
+			chicken.speed = 4;
+			chicken.framesLeft = 5;
+			chicken.distance = 0;
+			chicken.state = 0;
+
+			chicken.update = function ()
 			{
-				if (chicken.state == 0)
-					chicken.state = 1;
+				chicken.srcX = chicken.state * this.srcW;
+			};
+
+			chicken.animateCycle = function ()
+			{
+				if (chicken.framesLeft == 0)
+				{
+					if (chicken.state == 0)
+						chicken.state = 1;
+					else
+						chicken.state = 0;
+
+					chicken.framesLeft = 10;
+				}
 				else
-					chicken.state = 0;
+					chicken.framesLeft -= 1;
+			};
+			chicken.visible = false;
+		}
 
-				chicken.framesLeft = 10;
-			}
-			else
-				chicken.framesLeft -= 1;
-		};
-		chicken.visible = false;
-	}
+		var wormObject = function ()
+		{
+			this.startDistance = 0;
+			this.sprite = new SpriteObject();
+			this.NORMAL = 0;
+			this.DEAD = 3;
+			this.state = this.NORMAL;
+			this.framesLeft = 10;
+			this.ascend = true;
 
-	var wormObject = function ()
-	{
-		this.startDistance = 0;
-		this.sprite = new SpriteObject();
-		this.NORMAL = 0;
-		this.DEAD = 3;
-		this.state = this.NORMAL;
-		this.framesLeft = 10;
-		this.ascend = true;
-
-		this.update = function ()
-		{
-			this.sprite.srcX = this.state * this.sprite.srcW;
-		};
-		this.getScore = function ()
-		{
-			var score = getPercentage(this.sprite.distance, this.startDistance, false);
-			return Math.floor(score / 2) + 50;
-		};
-		this.animateCycle = function ()
-		{
-			if (this.framesLeft == 0)
+			this.update = function ()
 			{
-				if (this.state == 0)
-					this.ascend = true;
-				else if (this.state == 2)
-					this.ascend = false;
+				this.sprite.srcX = this.state * this.sprite.srcW;
+			};
+			this.getScore = function ()
+			{
+				var score = getPercentage(this.sprite.distance, this.startDistance, false);
+				return Math.floor(score / 2) + 50;
+			};
+			this.animateCycle = function ()
+			{
+				if (this.framesLeft == 0)
+				{
+					if (this.state == 0)
+						this.ascend = true;
+					else if (this.state == 2)
+						this.ascend = false;
 
-				if (! this.ascend)
-					this.state -= 1;
-				else if (this.ascend)
-					this.state += 1;
+					if (! this.ascend)
+						this.state -= 1;
+					else if (this.ascend)
+						this.state += 1;
 
-				this.framesLeft = 10;
-			}
-			else
-				this.framesLeft -= 1;
+					this.framesLeft = 10;
+				}
+				else
+					this.framesLeft -= 1;
+			};
 		};
-	};
 
-
-
-	var nest = new SpriteObject();
-	{
-		nest.srcX = 128;
-		nest.srcY = 128;
-		nest.srcW = 64;
-		nest.srcH = 64;
-		nest.w = 64;
-		nest.h = 64;
-		nest.x = canvas.width / 2 - nest.halfWidth();
-		nest.y = canvas.height / 2 - nest.halfHeight();
-		nest.visible = false;
+		var nest = new SpriteObject();
+		{
+			nest.srcX = 128;
+			nest.srcY = 128;
+			nest.srcW = 64;
+			nest.srcH = 64;
+			nest.w = 64;
+			nest.h = 64;
+			nest.x = canvas.width / 2 - nest.halfWidth();
+			nest.y = canvas.height / 2 - nest.halfHeight();
+			nest.visible = false;
+		}
+		var eggObject = function ()
+		{
+			this.sprite = new SpriteObject();
+		};
 	}
-
-	var powerUpGray = new SpriteObject();
-	{
-		powerUpGray.srcX = 192;
-		powerUpGray.srcY = 128;
-		powerUpGray.srcW = 64;
-		powerUpGray.srcH = 64;
-		powerUpGray.w = 64;
-		powerUpGray.h = 64;
-		powerUpGray.x = 30;
-		powerUpGray.y = canvas.height - powerUpGray.h - 30;
-		powerUpGray.visible = false;
-	}
-
-	var powerUpFull = new SpriteObject();
-	{
-		powerUpFull.srcX = 256;
-		powerUpFull.srcY = 128;
-		powerUpFull.srcW = 64;
-		powerUpFull.srcH = 64;
-		powerUpFull.w = 64;
-		powerUpFull.h = 64;
-		powerUpFull.x = 30;
-		powerUpFull.y = canvas.height - powerUpGray.h - 30;
-		powerUpFull.visible = false;
-	}
-
-	var eggObject = function ()
-	{
-		this.sprite = new SpriteObject();
-	};
 
 	// bg tiles
 	var bgTile = new SpriteObject();
@@ -398,95 +372,127 @@ function startLogic()
 	}
 
 	// UI sprites
-	var btnCap = new SpriteObject();
 	{
-		btnCap.srcX = 320;
-		btnCap.srcY = 128;
-		btnCap.srcW = 16;
-		btnCap.srcH = 64;
-		btnCap.w = 16;
-		btnCap.h = 64;
-		btnCap.visible = false;
+		var powerUpGray = new SpriteObject();
+		{
+			powerUpGray.srcX = 192;
+			powerUpGray.srcY = 128;
+			powerUpGray.srcW = 64;
+			powerUpGray.srcH = 64;
+			powerUpGray.w = 64;
+			powerUpGray.h = 64;
+			powerUpGray.x = 30;
+			powerUpGray.y = canvas.height - powerUpGray.h - 30;
+			powerUpGray.visible = false;
+		}
+
+		var powerUpFull = new SpriteObject();
+		{
+			powerUpFull.srcX = 256;
+			powerUpFull.srcY = 128;
+			powerUpFull.srcW = 64;
+			powerUpFull.srcH = 64;
+			powerUpFull.w = 64;
+			powerUpFull.h = 64;
+			powerUpFull.x = 30;
+			powerUpFull.y = canvas.height - powerUpGray.h - 30;
+			powerUpFull.visible = false;
+		}
+
+		var btnCap = new SpriteObject();
+		{
+			btnCap.srcX = 320;
+			btnCap.srcY = 128;
+			btnCap.srcW = 16;
+			btnCap.srcH = 64;
+			btnCap.w = 16;
+			btnCap.h = 64;
+			btnCap.visible = false;
+		}
+
+		var btnMid = new SpriteObject();
+		{
+			btnMid.srcX = 329;
+			btnMid.srcY = 128;
+			btnMid.srcW = 2;
+			btnMid.srcH = 64;
+			btnMid.w = 2;
+			btnMid.h = 64;
+			btnMid.visible = false;
+		}
+
+		var chkBox = new SpriteObject();
+		{
+			chkBox.srcX = 352;
+			chkBox.srcY = 128;
+			chkBox.srcW = 32;
+			chkBox.srcH = 32;
+			chkBox.w = 32;
+			chkBox.h = 32;
+			chkBox.visible = true;
+		}
 	}
 
-	var btnMid = new SpriteObject();
-	{
-		btnMid.srcX = 329;
-		btnMid.srcY = 128;
-		btnMid.srcW = 2;
-		btnMid.srcH = 64;
-		btnMid.w = 2;
-		btnMid.h = 64;
-		btnMid.visible = false;
-	}
-
-	var chkBox = new SpriteObject();
-	{
-		chkBox.srcX = 352;
-		chkBox.srcY = 128;
-		chkBox.srcW = 32;
-		chkBox.srcH = 32;
-		chkBox.w = 32;
-		chkBox.h = 32;
-		chkBox.visible = true;
-	}
-	
 	// button text
-	var btnMsgPlay = new MessageObject();
 	{
-		btnMsgPlay.text = "PLAY";
-		btnMsgPlay.font = menuFont;
-		btnMsgPlay.fontStyle = "red";
-		btnMsgPlay.x = (canvas.width / 2) - ((btnMsgPlay.text.length * fontHMenu) / 2);
-		btnMsgPlay.y = 450;
-		btnMsgPlay.visible = false;
-		btnMessages.push(btnMsgPlay);
+		var btnMsgPlay = new MessageObject();
+		{
+			btnMsgPlay.text = "PLAY";
+			btnMsgPlay.font = menuFont;
+			btnMsgPlay.fontStyle = "red";
+			btnMsgPlay.x = (canvas.width / 2) - ((btnMsgPlay.text.length * fontHMenu) / 2);
+			btnMsgPlay.y = 450;
+			btnMsgPlay.visible = false;
+			btnMessages.push(btnMsgPlay);
+		}
+
+		var btnMsgOptions = new MessageObject();
+		{
+			btnMsgOptions.text = "OPTIONS";
+			btnMsgOptions.font = menuFont;
+			btnMsgOptions.fontStyle = "red";
+			btnMsgOptions.x = (canvas.width / 2) - ((btnMsgOptions.text.length * fontHMenu) / 2);
+			btnMsgOptions.y = 550;
+			btnMsgOptions.visible = false;
+			btnMessages.push(btnMsgOptions);
+		}
+
+		var btnMsgBack = new MessageObject();
+		{
+			btnMsgBack.text = "BACK";
+			btnMsgBack.font = menuFont;
+			btnMsgBack.fontStyle = "red";
+			btnMsgBack.x = (canvas.width / 2) - ((btnMsgBack.text.length * fontHMenu) / 2);
+			btnMsgBack.y = 650;
+			btnMsgBack.visible = false;
+			btnMessages.push(btnMsgBack);
+		}
+
+		var btnMsgSFX = new MessageObject();
+		{
+			btnMsgSFX.text = "SFX";
+			btnMsgSFX.font = menuFont;
+			btnMsgSFX.fontStyle = "red";
+			btnMsgSFX.x = (canvas.width / 2) + 10;
+			btnMsgSFX.y = 450;
+			btnMsgSFX.visible = false;
+			btnMessages.push(btnMsgSFX);
+		}
+
+		var btnMsgMusic = new MessageObject();
+		{
+			btnMsgMusic.text = "Music";
+			btnMsgMusic.font = menuFont;
+			btnMsgMusic.fontStyle = "red";
+			btnMsgMusic.x = (canvas.width / 2) + 10;
+			btnMsgMusic.y = 550;
+			btnMsgMusic.visible = false;
+			btnMessages.push(btnMsgMusic);
+		}
 	}
 
-	var btnMsgOptions = new MessageObject();
-	{
-		btnMsgOptions.text = "OPTIONS";
-		btnMsgOptions.font = menuFont;
-		btnMsgOptions.fontStyle = "red";
-		btnMsgOptions.x = (canvas.width / 2) - ((btnMsgOptions.text.length * fontHMenu) / 2);
-		btnMsgOptions.y = 550;
-		btnMsgOptions.visible = false;
-		btnMessages.push(btnMsgOptions);
-	}
-
-	var btnMsgBack = new MessageObject();
-	{
-		btnMsgBack.text = "BACK";
-		btnMsgBack.font = menuFont;
-		btnMsgBack.fontStyle = "red";
-		btnMsgBack.x = (canvas.width / 2) - ((btnMsgBack.text.length * fontHMenu) / 2);
-		btnMsgBack.y = 650;
-		btnMsgBack.visible = false;
-		btnMessages.push(btnMsgBack);
-	}
-
-	var btnMsgSFX = new MessageObject();
-	{
-		btnMsgSFX.text = "SFX";
-		btnMsgSFX.font = menuFont;
-		btnMsgSFX.fontStyle = "red";
-		btnMsgSFX.x = (canvas.width / 2) + 10;
-		btnMsgSFX.y = 450;
-		btnMsgSFX.visible = false;
-		btnMessages.push(btnMsgSFX);
-	}
-
-	var btnMsgMusic = new MessageObject();
-	{
-		btnMsgMusic.text = "Music";
-		btnMsgMusic.font = menuFont;
-		btnMsgMusic.fontStyle = "red";
-		btnMsgMusic.x = (canvas.width / 2) + 10;
-		btnMsgMusic.y = 550;
-		btnMsgMusic.visible = false;
-		btnMessages.push(btnMsgMusic);
-	}
-
+	// determins which game state were in and which functions to call each frame
+	// then calls render
 	function update()
 	{
 		window.requestAnimationFrame(update);
@@ -494,8 +500,10 @@ function startLogic()
 		switch (gameState)
 		{
 			case LOADING:
+				runLoading();
 				break;
 			case MENU:
+				//runMenu();
 				break;
 			case OPTIONS:
 				break;
@@ -517,102 +525,32 @@ function startLogic()
 
 		//draw menu stuff
 		if (gameState == MENU)
-		{
 			showMenu();
-			if (music)
-				menu_music.play();
-		}
+
+		//draw options
 		if (gameState == OPTIONS)
 			showOptions();
-		//draw map
+
+		//draw game screen
 		if (gameState == PLAYING || gameState == GAMEEND)
 		{
 			renderMap();
 
-			//chicken info click listener here
-			canvas.addEventListener("mousedown", mouseLocation);
-			canvas.addEventListener("mouseup", mouseReset);
-
-			//draw chicken
 			drawEntity(nest);
 
-			for (i = 0; i < eggs.length; i ++)
-			{
-				var egg = eggs[i];
-				drawEntity(egg.sprite);
-			}
-
 			for (i = 0; i < worms.length; i ++)
-			{
-				var worm = worms[i];
-				if (worm.state != worm.DEAD)
-				{
-					worm.animateCycle();
-					worm.update();
-					entityMove(nest.center().x, nest.center().y, worm.sprite);
+				drawEntity(worms[i].sprite);
 
-					if (worm.startDistance == 0)
-						worm.startDistance = worm.sprite.distance;
+			for (i = 0; i < eggs.length; i ++)
+				drawEntity(eggs[i].sprite);
 
-					if (hitTestRectangle(chicken, worm.sprite))
-						killWorm(worm);
-
-					if (hitTestRectangle(worm.sprite, nest))
-					{
-						killWorm(worm, false);
-						if (eggs.length > 0)
-						{
-							egg = eggs[eggs.length - 1];
-							crackEgg(egg);
-						}
-						if (eggs.length < 1)
-						{
-							gameState = GAMEEND;
-						}
-					}
-				}
-				drawEntity(worm.sprite);
-			}
-
-
-			var tempX = chicken.x;
-			var tempY = chicken.y;
-
-			entityMove(clickLocation[0], clickLocation[1], chicken);
-			if (hitTestCircle(nest, chicken))
-			{
-				chicken.x = tempX;
-				chicken.y = tempY;
-			}
-			else if (chicken.x <= 0 || chicken.y <= 0 ||
-					chicken.x + chicken.w >= canvas.width || chicken.y + chicken.h >= canvas.height)
-			{
-				chicken.x = tempX;
-				chicken.y = tempY;
-			}
-
-			var walkingChicken = false;
-			if (! isNaN(clickLocation[0]) && ! isNaN(clickLocation[1]))
-			{
-				walkingChicken = true;
-				chicken.animateCycle();
-				chicken.update();
-			}
-
-			if (walkingChicken && SFX)
-				chicken_walk.play();
-			else
-			{
-				chicken_walk.pause();
-				chicken_walk.currentTime = 0;
-			}
 			drawEntity(chicken);
 			showScoreUI();
 			drawEntity(powerUpGray);
 			drawEntity(powerUpFull);
 		}
 	}
-	
+
 	function prepareEggs()
 	{
 		eggs = [];
@@ -620,7 +558,7 @@ function startLogic()
 		createEgg(- 10, 0);
 		createEgg(10, 10);
 	}
-	
+
 	function createEgg(x, y)
 	{
 		var egg = new eggObject();
@@ -682,6 +620,74 @@ function startLogic()
 		}
 	}
 
+	function calcWorm(worm)
+	{
+		if (worm.state != worm.DEAD)
+		{
+			worm.animateCycle();
+			worm.update();
+			entityMove(nest.center().x, nest.center().y, worm.sprite);
+
+			if (worm.startDistance == 0)
+				worm.startDistance = worm.sprite.distance;
+
+			if (hitTestRectangle(chicken, worm.sprite))
+				killWorm(worm);
+
+			if (hitTestRectangle(worm.sprite, nest))
+			{
+				killWorm(worm, false);
+
+				if (eggs.length > 0)
+				{
+					var egg = eggs[eggs.length - 1];
+					crackEgg(egg);
+				}
+
+				if (eggs.length < 1)
+					gameState = GAMEEND;
+			}
+		}
+	}
+
+	function calcChicken()
+	{
+		var tempX = chicken.x;
+		var tempY = chicken.y;
+
+		entityMove(clickLocation[0], clickLocation[1], chicken);
+
+		if (hitTestCircle(nest, chicken))
+		{
+			chicken.x = tempX;
+			chicken.y = tempY;
+		}
+
+		else if (chicken.x <= 0 || chicken.y <= 0 ||
+				chicken.x + chicken.w >= canvas.width || chicken.y + chicken.h >= canvas.height)
+		{
+			chicken.x = tempX;
+			chicken.y = tempY;
+		}
+
+		var walkingChicken = false;
+
+		if (! isNaN(clickLocation[0]) && ! isNaN(clickLocation[1]))
+		{
+			walkingChicken = true;
+			chicken.animateCycle();
+			chicken.update();
+		}
+
+		if (walkingChicken && SFX)
+			chicken_walk.play();
+		else
+		{
+			chicken_walk.pause();
+			chicken_walk.currentTime = 0;
+		}
+	}
+
 	function crackEgg(egg)
 	{
 		egg_cracking.playCheck();
@@ -692,8 +698,8 @@ function startLogic()
 		{
 			removeObject(egg, eggs);
 		}
-	}	
-	
+	}
+
 	function killWorm(worm, kill)
 	{
 		if (kill == undefined)
@@ -723,7 +729,7 @@ function startLogic()
 	{
 		score = 0;
 		minScore = 0;
-		timeInSeconds = 30;
+		timeInSeconds = 5;
 		level = 1;
 		powerUp = 0;
 		powerUpSmoother = 0;
@@ -798,19 +804,38 @@ function startLogic()
 		}, 100);
 	}
 
+	function runLoading()
+	{
+		if (music)
+			menu_music.play();
+	}
+
 	function playGame()
 	{
+		for (i = 0; i < worms.length; i ++)
+			calcWorm(worms[i]);
+
+		calcChicken();
+
 		if (newGame)
 		{
+			//chicken info click listener here
+
+
 			initGameUI();
 			genMap();
 			prepareEggs();
 			newGame = false;
 		}
 	}
-	
+
 	function endGame()
 	{
+		for (i = 0; i < worms.length; i ++)
+			calcWorm(worms[i]);
+
+		calcChicken();
+
 		if (worms.length == 0 || eggs.length == 0)
 		{
 			if (timeInSeconds == 0)
@@ -820,7 +845,7 @@ function startLogic()
 
 			endElement.update();
 			endElement.visible = true;
-			
+
 			worms = [];
 			clearInterval(coolDownTimeInterval);
 		}
@@ -955,7 +980,8 @@ function startLogic()
 
 		}
 
-		if ((gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], play)) || gameState == GAMEEND)
+		if ((gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], play)) ||
+				(gameState == GAMEEND && (worms.length == 0 || eggs.length == 0)))
 		{
 			button_sfx.playCheck();
 			newGame = true;
@@ -1155,7 +1181,7 @@ function startLogic()
 
 		renderMsg(btnMessages);
 	}
-	
+
 	/**
 	 * renders the BG of the game screen by reading an array representing the
 	 * tiles and their orientation
@@ -1204,7 +1230,7 @@ function startLogic()
 			}
 		}
 	}
-	
+
 	/**
 	 * renders all MessageObjects in the given array based on each objects
 	 * proporties
