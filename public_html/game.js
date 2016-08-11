@@ -1,63 +1,82 @@
 function startLogic()
 {
+	// canvas variable set up
 	var canvas = document.querySelector("canvas");
 	var ctx = canvas.getContext("2d");
-
+	
+	// loader variables
 	var assetsToLoad = [];
 	var assetsLoaded = 0;
 
-	var tileCountX = 32;
-	var tileCountY = 24;
+	// map size
+	var tileCountX = canvas.width/32;
+	var tileCountY = canvas.height/32;
 
 	console.log("Loading...");
 
-	// SFX files
-	var chicken_walk = document.querySelector("#chicken_walk");
-	chicken_walk.addEventListener("canplaythrough", loadHandler);
-	chicken_walk.volume = 0.5;
-	chicken_walk.load();
-	assetsToLoad.push(chicken_walk);
-
-	var squish = document.querySelector("#squish");
-	squish.addEventListener("canplaythrough", loadHandler);
-	squish.volume = 0.5;
-	squish.load();
-	assetsToLoad.push(squish);
-
-	var egg_cracking = document.querySelector("#egg_cracking");
-	egg_cracking.addEventListener("canplaythrough", loadHandler);
-	egg_cracking.volume = 0.3;
-	egg_cracking.load();
-	egg_cracking.playCheck = function ()
+	// sound files
 	{
-		if (SFX)
-			egg_cracking.play();
-	};
-	assetsToLoad.push(egg_cracking);
+		var chicken_walk = document.querySelector("#chicken_walk");
+		{
+			chicken_walk.addEventListener("canplaythrough", loadHandler);
+			chicken_walk.volume = 0.5;
+			chicken_walk.load();
+			assetsToLoad.push(chicken_walk);
+		}
 
-	var menu_music = document.querySelector("#menu_music");
-	menu_music.addEventListener("canplaythrough", loadHandler);
-	menu_music.volume = 0.4;
-	menu_music.load();
-	assetsToLoad.push(menu_music);
+		var squish = document.querySelector("#squish");
+		{
+			squish.addEventListener("canplaythrough", loadHandler);
+			squish.volume = 0.5;
+			squish.load();
+			assetsToLoad.push(squish);
+		}
 
-	var button_sfx = document.querySelector("#button_sfx");
-	button_sfx.addEventListener("canplaythrough", loadHandler);
-	button_sfx.volume = 0.4;
-	button_sfx.load();
-	button_sfx.playCheck = function ()
-	{
-		if (SFX)
-			button_sfx.play();
-	};
-	assetsToLoad.push(button_sfx);
+		var egg_cracking = document.querySelector("#egg_cracking");
+		{
+			egg_cracking.addEventListener("canplaythrough", loadHandler);
+			egg_cracking.volume = 0.3;
+			egg_cracking.load();
+			egg_cracking.playCheck = function ()
+			{
+				if (SFX)
+					egg_cracking.play();
+			};
+			assetsToLoad.push(egg_cracking);
+		}
 
+		var menu_music = document.querySelector("#menu_music");
+		{
+			menu_music.addEventListener("canplaythrough", loadHandler);
+			menu_music.volume = 0.4;
+			menu_music.load();
+			assetsToLoad.push(menu_music);
+		}
+
+		var button_sfx = document.querySelector("#button_sfx");
+		{
+			button_sfx.addEventListener("canplaythrough", loadHandler);
+			button_sfx.volume = 0.4;
+			button_sfx.load();
+			button_sfx.playCheck = function ()
+			{
+				if (SFX)
+					button_sfx.play();
+			};
+			assetsToLoad.push(button_sfx);
+		}
+	}
 	// Sprite sheet
 	var image = new Image();
-	image.src = "images/spritesheet.png";
-	image.addEventListener("load", loadHandler);
-	assetsToLoad.push(image);
+	{
+		image.src = "images/spritesheet.png";
+		image.addEventListener("load", loadHandler);
+		assetsToLoad.push(image);
+	}
 
+	/**
+	 * checks each time somthing loads and doesn't start the menu till it's all loaded
+	 */
 	function loadHandler()
 	{
 		assetsLoaded += 1;
@@ -84,52 +103,76 @@ function startLogic()
 	}
 
 	// Gamestates
-	var LOADING = 0;
-	var MENU = 1;
-	var OPTIONS = 2;
-	var PLAYING = 3;
-	var GAMEEND = 4;
-	var gameState = LOADING;
+	{
+		var LOADING = 0;
+		var MENU = 1;
+		var OPTIONS = 2;
+		var PLAYING = 3;
+		var GAMEEND = 4;
+		var gameState = LOADING;
+	}
 
-	var score;
-	var minScore;
-	var timeInSeconds;
-	var level;
-	var powerUp;
-	var powerUpSmoother;
-	var boostDuration;
-	var timeToNextWorm;
+	// assorted variables
+	{
+		var score;
+		var minScore;
+		var timeInSeconds;
+		var level;
+		var powerUp;
+		var powerUpSmoother;
+		var boostDuration;
+		var timeToNextWorm;
+	}
 
-	var fontHUI = 14;
-	var fontHMenu = 21;
-	var menuFont = "normal bold 30px cella";
-	var UIFont = "normal bold 20px cella";
+	// font variables
+	{
+		var fontHUI = 14;
+		var fontHMenu = 21;
+		var menuFont = "normal bold 30px cella";
+		var UIFont = "normal bold 20px cella";
+	}
 
-	var music = false;
-	var SFX = true;
+	// audio toggle variables
+	{
+		var music = false;
+		var SFX = true;
+	}
 
-	var play = new simpleRect((canvas.width / 2) - (100), 405, 232, 64);
-	var options = new simpleRect((canvas.width / 2) - (100), 505, 232, 64);
-	var back = new simpleRect((canvas.width / 2) - (100), 605, 232, 64);
-	var SFXRect = new simpleRect((canvas.width / 2) - 40, 425, 32, 32);
-	var musicRect = new simpleRect((canvas.width / 2) - 40, 525, 32, 32);
+	// click detection boxes
+	{
+		var play = new simpleRect((canvas.width / 2) - (100), 405, 232, 64);
+		var options = new simpleRect((canvas.width / 2) - (100), 505, 232, 64);
+		var back = new simpleRect((canvas.width / 2) - (100), 605, 232, 64);
+		var SFXRect = new simpleRect((canvas.width / 2) - 40, 425, 32, 32);
+		var musicRect = new simpleRect((canvas.width / 2) - 40, 525, 32, 32);
+	}
 
-	var gameTimeInterval;
-	var coolDownTimeInterval;
-	var wormTimeout;
+	// timers
+	{
+		var gameTimeInterval;
+		var coolDownTimeInterval;
+		var wormTimeout;
+	}
 
-	var sprites = [];
-	var spriteTiles = [[]];
-	var worms = [];
-	var eggs = [];
-	var messages = [];
-	var btnMessages = [];
+	// object arrays
+	{
+		var sprites = [];
+		var spriteTiles = [[]];
+		var worms = [];
+		var eggs = [];
+		var messages = [];
+		var btnMessages = [];
+	}
 
-	var clickLocation = [];
-	var spaceKeyCode = 32;
+	// input variables
+	{
+		var clickLocation = [];
+		var spaceKeyCode = 32;
+	}
 
 	var newGame = true;
 
+	// text elements
 	var timeElement = new MessageObject();
 	{
 		timeElement.update = function ()
@@ -249,7 +292,6 @@ function startLogic()
 				chicken.framesLeft -= 1;
 		};
 		chicken.visible = false;
-		sprites.push(chicken);
 	}
 
 	var wormObject = function ()
@@ -280,7 +322,7 @@ function startLogic()
 				else if (this.state == 2)
 					this.ascend = false;
 
-				if (!this.ascend)
+				if (! this.ascend)
 					this.state -= 1;
 				else if (this.ascend)
 					this.state += 1;
@@ -306,7 +348,6 @@ function startLogic()
 			worm.sprite.distance = 0;
 			worm.sprite.visible = false;
 			worm.update();
-			sprites.push(worm.sprite);
 			worms.push(worm);
 		}
 
@@ -322,7 +363,7 @@ function startLogic()
 			range = range - worm.sprite.h;
 		}
 
-		var domain = getRandom(0, (!axis ? canvas.width : canvas.height));
+		var domain = getRandom(0, (! axis ? canvas.width : canvas.height));
 
 		if (axis)
 		{
@@ -347,7 +388,6 @@ function startLogic()
 		nest.x = canvas.width / 2 - nest.halfWidth();
 		nest.y = canvas.height / 2 - nest.halfHeight();
 		nest.visible = false;
-		sprites.push(nest);
 	}
 
 	var powerUpGray = new SpriteObject();
@@ -361,7 +401,6 @@ function startLogic()
 		powerUpGray.x = 30;
 		powerUpGray.y = canvas.height - powerUpGray.h - 30;
 		powerUpGray.visible = false;
-		sprites.push(powerUpGray);
 	}
 
 	var powerUpFull = new SpriteObject();
@@ -375,7 +414,6 @@ function startLogic()
 		powerUpFull.x = 30;
 		powerUpFull.y = canvas.height - powerUpGray.h - 30;
 		powerUpFull.visible = false;
-		sprites.push(powerUpFull);
 	}
 
 	var eggObject = function ()
@@ -383,33 +421,7 @@ function startLogic()
 		this.sprite = new SpriteObject();
 	};
 
-	function createEgg(x, y)
-	{
-		var egg = new eggObject();
-		{
-			egg.sprite.srcX = 128;
-			egg.sprite.srcY = 32;
-			egg.sprite.srcW = 32;
-			egg.sprite.srcH = 32;
-			egg.sprite.w = 26;
-			egg.sprite.h = 26;
-			egg.sprite.visible = false;
-			sprites.push(egg.sprite);
-			eggs.push(egg);
-
-			egg.sprite.x = canvas.width / 2 - egg.sprite.halfWidth() + x;
-			egg.sprite.y = canvas.height / 2 - egg.sprite.halfHeight() + y;
-		}
-	}
-
-	function prepareEggs()
-	{
-		eggs = [];
-		createEgg(10, -10);
-		createEgg(-10, 0);
-		createEgg(10, 10);
-	}
-
+	// bg tiles
 	var bgTile = new SpriteObject();
 	{
 		bgTile.srcX = 32;
@@ -421,6 +433,7 @@ function startLogic()
 		bgTile.visible = true;
 	}
 
+	// UI sprites
 	var btnCap = new SpriteObject();
 	{
 		btnCap.srcX = 160;
@@ -453,7 +466,8 @@ function startLogic()
 		chkBox.h = 32;
 		chkBox.visible = true;
 	}
-
+	
+	// button text
 	var btnMsgPlay = new MessageObject();
 	{
 		btnMsgPlay.text = "PLAY";
@@ -540,12 +554,12 @@ function startLogic()
 		//draw menu stuff
 		if (gameState == MENU)
 		{
-			renderMenu();
+			showMenu();
 			if (music)
 				menu_music.play();
 		}
 		if (gameState == OPTIONS)
-			renderOptions();
+			showOptions();
 		//draw map
 		if (gameState == PLAYING || gameState == GAMEEND)
 		{
@@ -554,16 +568,17 @@ function startLogic()
 			//chicken info click listener here
 			canvas.addEventListener("mousedown", mouseLocation);
 			canvas.addEventListener("mouseup", mouseReset);
+
 			//draw chicken
 			drawEntity(nest);
 
-			for (i = 0; i < eggs.length; i++)
+			for (i = 0; i < eggs.length; i ++)
 			{
 				var egg = eggs[i];
 				drawEntity(egg.sprite);
 			}
 
-			for (i = 0; i < worms.length; i++)
+			for (i = 0; i < worms.length; i ++)
 			{
 				var worm = worms[i];
 				if (worm.state != worm.DEAD)
@@ -613,7 +628,7 @@ function startLogic()
 			}
 
 			var walkingChicken = false;
-			if (!isNaN(clickLocation[0]) && !isNaN(clickLocation[1]))
+			if (! isNaN(clickLocation[0]) && ! isNaN(clickLocation[1]))
 			{
 				walkingChicken = true;
 				chicken.animateCycle();
@@ -628,7 +643,7 @@ function startLogic()
 				chicken_walk.currentTime = 0;
 			}
 			drawEntity(chicken);
-			renderScoreUI();
+			showScoreUI();
 			drawEntity(powerUpGray);
 			drawEntity(powerUpFull);
 		}
@@ -655,11 +670,36 @@ function startLogic()
 
 		function removeWorm()
 		{
-			removeObject(worm.sprite, sprites);
 			removeObject(worm, worms);
 		}
 	}
 
+	function createEgg(x, y)
+	{
+		var egg = new eggObject();
+		{
+			egg.sprite.srcX = 128;
+			egg.sprite.srcY = 32;
+			egg.sprite.srcW = 32;
+			egg.sprite.srcH = 32;
+			egg.sprite.w = 26;
+			egg.sprite.h = 26;
+			egg.sprite.visible = false;
+			eggs.push(egg);
+
+			egg.sprite.x = canvas.width / 2 - egg.sprite.halfWidth() + x;
+			egg.sprite.y = canvas.height / 2 - egg.sprite.halfHeight() + y;
+		}
+	}
+
+	function prepareEggs()
+	{
+		eggs = [];
+		createEgg(10, - 10);
+		createEgg(- 10, 0);
+		createEgg(10, 10);
+	}
+	
 	function crackEgg(egg)
 	{
 		egg_cracking.playCheck();
@@ -668,7 +708,6 @@ function startLogic()
 
 		function removeEgg()
 		{
-			removeObject(egg.sprite, sprites);
 			removeObject(egg, eggs);
 		}
 	}
@@ -774,12 +813,7 @@ function startLogic()
 
 			endElement.update();
 			endElement.visible = true;
-			for (i = 0; i < worms.length; i++)
-			{
-				var worm = worms[i];
-				removeObject(worm.sprite, sprites);
-
-			}
+			
 			worms = [];
 			clearInterval(coolDownTimeInterval);
 		}
@@ -788,16 +822,16 @@ function startLogic()
 		clearInterval(gameTimeInterval);
 	}
 
-// dirt = 0
-// rock = 1
-// grass edge = 2
-// grass corner = 3
-// fence edge = 4
-// fence corner = 5
-// 
-// rotation is 0-3
-// 90*rotation clockwise
-
+	/**
+	 * generates the array for the game map, randomly selecting gravel/rock thing
+	 * and randomly selecting fence or no fence
+	 *  dirt = 0
+	 * rock = 1
+	 * grass edge = 2
+	 * grass corner = 3
+	 * fence edge = 4
+	 * fence corner = 5
+	 */
 	function genMap()
 	{
 		var EDGE = 2;		//defaults to fenceless edge
@@ -809,13 +843,13 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for (var x = 0; x < tileCountX; x++)
+		for (var x = 0; x < tileCountX; x ++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for (var y = 0; y < tileCountY; y++)
+			for (var y = 0; y < tileCountY; y ++)
 			{
 				id = 0;
 
@@ -871,6 +905,10 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * if key pressed is space then if triggers the boost if its up and sets the cooldown
+	 * @param {keydown} e keyboard button pressed
+	 */
 	function keyPressed(e)
 	{
 		if (e.keyCode == spaceKeyCode)
@@ -888,6 +926,11 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * checks the click location against button locations and states of game and
+	 * runs appropiate code
+	 * @param {type} e mouse click event
+	 */
 	function mouseLocation(e)
 	{
 		if (event.which == 1)
@@ -904,6 +947,7 @@ function startLogic()
 			clickLocation = [Math.floor(x), Math.floor(y)];
 
 		}
+
 		if ((gameState == MENU && hitTestPoint(clickLocation[0], clickLocation[1], play)) || gameState == GAMEEND)
 		{
 			button_sfx.playCheck();
@@ -924,17 +968,19 @@ function startLogic()
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
 			{
-				SFX = !SFX;
+				SFX = ! SFX;
 				button_sfx.playCheck();
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
 			{
 				button_sfx.playCheck();
+
 				if (music)
 					menu_music.pause();
 				else
 					menu_music.play();
-				music = !music;
+
+				music = ! music;
 			}
 		}
 		else if (gameState == PLAYING)
@@ -944,6 +990,12 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * takes the event of a moust click and makes sure it's the left mouse button
+	 * before continueing
+	 * @param {type} e mouse click event
+	 * @returns {Boolean} true if mouse button clicked is left button
+	 */
 	function buttonPressed(e)
 	{
 		if (e.buttons == null)
@@ -952,9 +1004,13 @@ function startLogic()
 			return e.buttons != 0;
 	}
 
+	/**
+	 * when called sets clickLocation to the current cords of the mouse on the canvas
+	 * @param {type} e mousemove event
+	 */
 	function mouseMoved(e)
 	{
-		if (!buttonPressed(e))
+		if (! buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
 		}
@@ -973,15 +1029,25 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * resets clickLocation to undefined
+	 */
 	function mouseReset()
 	{
 		clickLocation[0] = undefined;
 		clickLocation[1] = undefined;
 	}
 
+	/**
+	 * moves the given entity in the direction of x,y by an amount equal to
+	 * the vx and vy of the given entity
+	 * @param {int} x x of target cords
+	 * @param {int} y y of target cords
+	 * @param {SpriteObject} entity entity to move
+	 */
 	function entityMove(x, y, entity)
 	{
-		if (!isNaN(x) && !isNaN(y))
+		if (! isNaN(x) && ! isNaN(y))
 		{
 			var dx = entity.x + entity.halfWidth() - x;
 			var dy = entity.y + entity.halfHeight() - y;
@@ -1006,6 +1072,11 @@ function startLogic()
 		}
 	}
 
+	/**
+	 * draws the given entity based on the location and src information as well
+	 * as rotation it has
+	 * @param {SpriteObject} entity to draw
+	 */
 	function drawEntity(entity)
 	{
 		ctx.save();
@@ -1014,7 +1085,7 @@ function startLogic()
 		if (entity.r != 0)
 			ctx.rotate(Math.radians(entity.r - 90));
 
-		ctx.translate(-entity.halfWidth(), -entity.halfHeight());
+		ctx.translate(- entity.halfWidth(), - entity.halfHeight());
 
 		ctx.drawImage(image,
 				entity.srcX, //srcX			
@@ -1026,36 +1097,39 @@ function startLogic()
 		ctx.restore();
 	}
 
+	/**
+	 * renders the BG of the game screen by reading an array representing the
+	 * tiles and their orientation
+	 */
 	function renderMap()
 	{
-		for (var x = 0; x < tileCountX; x++)
+		for (var x = 0; x < tileCountX; x ++)
 		{
-			for (var y = 0; y < tileCountY; y++)
+			for (var y = 0; y < tileCountY; y ++)
 			{
 
 				var tempX = 0;
 				var tempY = 0;
 				var rot = spriteTiles[x][y].rotation;
 
-				if (rot == 0)
+				switch (rot)
 				{
-					tempX = 0;
-					tempY = 0;
-				}
-				else if (rot == 1)
-				{
-					tempX = 0;
-					tempY = -1;
-				}
-				else if (rot == 2)
-				{
-					tempX = -1;
-					tempY = -1;
-				}
-				else if (rot == 3)
-				{
-					tempX = -1;
-					tempY = 0;
+					case 0:
+						tempX = 0;
+						tempY = 0;
+						break;
+					case 1:
+						tempX = 0;
+						tempY = - 1;
+						break;
+					case 2:
+						tempX = - 1;
+						tempY = - 1;
+						break;
+					case 3:
+						tempX = - 1;
+						tempY = 0;
+						break;
 				}
 
 				ctx.save();
@@ -1072,30 +1146,23 @@ function startLogic()
 		}
 	}
 
-	function renderScoreUI()
+	/**
+	 * updates and rerenders the scoreUI on the game screen
+	 */
+	function showScoreUI()
 	{
 		timeElement.text = timeInSeconds + " seconds left";
 		timeElement.update();
 		scoreElement.text = score + " worm smears";
 		scoreElement.update();
 
-		for (var i = 0; i < messages.length; i++)
-		{
-			var message = messages[i];
-
-			if (message.visible)
-			{
-
-				ctx.font = message.font;
-				ctx.fillStyle = message.fontStyle;
-				ctx.textBaseLine = message.textBaseline;
-
-				ctx.fillText(message.text, message.x, message.y);
-			}
-		}
+		renderMsg(messages);
 	}
 
-	function renderMenu()
+	/**
+	 * sets correct visabilty for main menu and rerenders approprite elements
+	 */
+	function showMenu()
 	{
 		btnMsgOptions.visible = true;
 		btnMsgPlay.visible = true;
@@ -1103,38 +1170,17 @@ function startLogic()
 		btnMsgSFX.visible = false;
 		btnMsgMusic.visible = false;
 
-		for (var i = 0; i < sprites.length; i++)
-		{
+		renderSprites(sprites);
 
-			var sprite = sprites[i];
-			if (sprite.visible)
-			{
-
-				ctx.drawImage(image,
-						sprite.srcX, sprite.srcY,
-						sprite.srcW, sprite.srcH,
-						Math.floor(sprite.x), Math.floor(sprite.y),
-						sprite.w, sprite.h
-						);
-			}
-		}
 		renderButton(405);
 		renderButton(505);
-		for (var i = 0; i < btnMessages.length; i++)
-		{
-			var btnMessage = btnMessages[i];
-			if (btnMessage.visible)
-			{
-				ctx.font = btnMessage.font;
-				ctx.fillStyle = btnMessage.fontStyle;
-				ctx.textBaseLine = btnMessage.textBaseline;
-
-				ctx.fillText(btnMessage.text, btnMessage.x, btnMessage.y);
-			}
-		}
+		renderMsg(btnMessages);
 	}
 
-	function renderOptions()
+	/**
+	 * sets correct visabilty for options menu and rerenders approprite elements
+	 */
+	function showOptions()
 	{
 		btnMsgBack.visible = true;
 		btnMsgPlay.visible = false;
@@ -1142,10 +1188,48 @@ function startLogic()
 		btnMsgSFX.visible = true;
 		btnMsgMusic.visible = true;
 
-		for (var i = 0; i < sprites.length; i++)
+		renderSprites(sprites);
+
+		renderButton(605);
+
+		renderCheckBox((canvas.width / 2) - 40, 425, SFX);
+		renderCheckBox((canvas.width / 2) - 40, 525, music);
+
+		renderMsg(btnMessages);
+	}
+
+	/**
+	 * renders all MessageObjects in the given array based on each objects
+	 * proporties
+	 * @param {Array} msgs Array of MessageObjects to be rendered
+	 */
+	function renderMsg(msgs)
+	{
+		for (var i = 0; i < msgs.length; i ++)
+		{
+			var msg = msgs[i];
+			if (msg.visible)
+			{
+				ctx.font = msg.font;
+				ctx.fillStyle = msg.fontStyle;
+				ctx.textBaseLine = msg.textBaseline;
+
+				ctx.fillText(msg.text, msg.x, msg.y);
+			}
+		}
+	}
+
+	/**
+	 * renders all SpriteObject in the given array based on each objects
+	 * proporties
+	 * @param {Array} spritesArray Array of SpriteObject to be rendered
+	 */
+	function renderSprites(spritesArray)
+	{
+		for (var i = 0; i < spritesArray.length; i ++)
 		{
 
-			var sprite = sprites[i];
+			var sprite = spritesArray[i];
 			if (sprite.visible)
 			{
 
@@ -1157,25 +1241,15 @@ function startLogic()
 						);
 			}
 		}
-		renderButton(605);
-
-		renderCheckBox((canvas.width / 2) - 40, 425, SFX);
-		renderCheckBox((canvas.width / 2) - 40, 525, music);
-
-		for (var i = 0; i < btnMessages.length; i++)
-		{
-			var btnMessage = btnMessages[i];
-			if (btnMessage.visible)
-			{
-				ctx.font = btnMessage.font;
-				ctx.fillStyle = btnMessage.fontStyle;
-				ctx.textBaseLine = btnMessage.textBaseline;
-
-				ctx.fillText(btnMessage.text, btnMessage.x, btnMessage.y);
-			}
-		}
 	}
 
+	/**
+	 * renders a checkbox at x,y that is ether checked or unchecked based on
+	 * given boolean value
+	 * @param {int} x x cords of boxes top left
+	 * @param {int} y y cords of boxes top left
+	 * @param {Boolean} checked if the checkbox is checked
+	 */
 	function renderCheckBox(x, y, checked)
 	{
 		ctx.drawImage(image,
@@ -1186,6 +1260,11 @@ function startLogic()
 				);
 	}
 
+	/**
+	 * renders a button at the given height, centered in the canvas, using 
+	 * btnCap and btnMid
+	 * @param {int} yLocation height of button
+	 */
 	function renderButton(yLocation)
 	{
 		var xSize = 100;
@@ -1201,6 +1280,7 @@ function startLogic()
 				);
 
 		ctx.translate(16, 0);
+
 		for (var i = 0; i < xSize; i += 1)
 		{
 			ctx.drawImage(image,
