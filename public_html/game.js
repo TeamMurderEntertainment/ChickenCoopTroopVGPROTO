@@ -908,10 +908,10 @@ function startLogic()
 				}
 
 				//random rocks 1 space inside border
-				if (x > 1 && x < (tileCountX - 1) - 1)
-					if (y > 1 && y < (tileCountY - 1) - 1)
-						if (Math.random() > 0.95)
-						id = (Math.random() > 0.60 ? 1 : 7);
+				if (x >= 1 && x <= (tileCountX - 1) - 1)
+					if (y >= 1 && y <= (tileCountY - 1) - 1)
+						if (Math.random() > 0.9)
+						id = (Math.random() > 0.5 ? 1 : 7);
 
 
 				spriteTiles[x].push(new spriteID(id, rotation));
