@@ -122,6 +122,7 @@ function startLogic()
 		var powerUpSmoother;
 		var boostDuration;
 		var timeToNextWorm;
+		var newGame = true;
 	}
 
 	// font variables
@@ -170,9 +171,8 @@ function startLogic()
 		var spaceKeyCode = 32;
 	}
 
-	var newGame = true;
-
 	// text elements
+	{
 	var timeElement = new MessageObject();
 	{
 		timeElement.update = function ()
@@ -231,7 +231,10 @@ function startLogic()
 		endElement.visible = false;
 		messages.push(endElement);
 	}
-
+	}
+	
+	// menu sprites
+	{
 	var background = new SpriteObject();
 	{
 		background.srcY = 192;
@@ -255,7 +258,9 @@ function startLogic()
 		title.visible = true;
 		sprites.push(title);
 	}
-
+	}
+	
+	
 	var chicken = new SpriteObject();
 	{
 		chicken.srcX = 0;
@@ -334,48 +339,7 @@ function startLogic()
 		};
 	};
 
-	function createWorm()
-	{
-		var worm = new wormObject();
-		{
-			worm.sprite.srcY = 128;
-			worm.sprite.srcW = 32;
-			worm.sprite.srcH = 63;
-			worm.sprite.w = 32;
-			worm.sprite.h = 63;
-			worm.sprite.r = 0;
-			worm.sprite.speed = 2;
-			worm.sprite.distance = 0;
-			worm.sprite.visible = false;
-			worm.update();
-			worms.push(worm);
-		}
 
-		var axis = getRandom(0, 1);
-		var range = getRandom(0, 1);
-
-		if (range)
-		{
-			range = (axis ? canvas.width + worm.sprite.halfHeight() : canvas.height + worm.sprite.halfHeight());
-		}
-		else
-		{
-			range = range - worm.sprite.h;
-		}
-
-		var domain = getRandom(0, (! axis ? canvas.width : canvas.height));
-
-		if (axis)
-		{
-			worm.sprite.x = range;
-			worm.sprite.y = domain;
-		}
-		else
-		{
-			worm.sprite.y = range;
-			worm.sprite.x = domain;
-		}
-	}
 
 	var nest = new SpriteObject();
 	{
@@ -648,7 +612,88 @@ function startLogic()
 			drawEntity(powerUpFull);
 		}
 	}
+	
+	function prepareEggs()
+	{
+		eggs = [];
+		createEgg(10, - 10);
+		createEgg(- 10, 0);
+		createEgg(10, 10);
+	}
+	
+	function createEgg(x, y)
+	{
+		var egg = new eggObject();
+		{
+			egg.sprite.srcX = 128;
+			egg.sprite.srcY = 32;
+			egg.sprite.srcW = 32;
+			egg.sprite.srcH = 32;
+			egg.sprite.w = 26;
+			egg.sprite.h = 26;
+			egg.sprite.visible = false;
+			eggs.push(egg);
 
+			egg.sprite.x = canvas.width / 2 - egg.sprite.halfWidth() + x;
+			egg.sprite.y = canvas.height / 2 - egg.sprite.halfHeight() + y;
+		}
+	}
+
+	function createWorm()
+	{
+		var worm = new wormObject();
+		{
+			worm.sprite.srcY = 128;
+			worm.sprite.srcW = 32;
+			worm.sprite.srcH = 63;
+			worm.sprite.w = 32;
+			worm.sprite.h = 63;
+			worm.sprite.r = 0;
+			worm.sprite.speed = 2;
+			worm.sprite.distance = 0;
+			worm.sprite.visible = false;
+			worm.update();
+			worms.push(worm);
+		}
+
+		var axis = getRandom(0, 1);
+		var range = getRandom(0, 1);
+
+		if (range)
+		{
+			range = (axis ? canvas.width + worm.sprite.halfHeight() : canvas.height + worm.sprite.halfHeight());
+		}
+		else
+		{
+			range = range - worm.sprite.h;
+		}
+
+		var domain = getRandom(0, (! axis ? canvas.width : canvas.height));
+
+		if (axis)
+		{
+			worm.sprite.x = range;
+			worm.sprite.y = domain;
+		}
+		else
+		{
+			worm.sprite.y = range;
+			worm.sprite.x = domain;
+		}
+	}
+
+	function crackEgg(egg)
+	{
+		egg_cracking.playCheck();
+		//future space for stuff
+		removeEgg();
+
+		function removeEgg()
+		{
+			removeObject(egg, eggs);
+		}
+	}	
+	
 	function killWorm(worm, kill)
 	{
 		if (kill == undefined)
@@ -671,55 +716,6 @@ function startLogic()
 		function removeWorm()
 		{
 			removeObject(worm, worms);
-		}
-	}
-
-	function createEgg(x, y)
-	{
-		var egg = new eggObject();
-		{
-			egg.sprite.srcX = 128;
-			egg.sprite.srcY = 32;
-			egg.sprite.srcW = 32;
-			egg.sprite.srcH = 32;
-			egg.sprite.w = 26;
-			egg.sprite.h = 26;
-			egg.sprite.visible = false;
-			eggs.push(egg);
-
-			egg.sprite.x = canvas.width / 2 - egg.sprite.halfWidth() + x;
-			egg.sprite.y = canvas.height / 2 - egg.sprite.halfHeight() + y;
-		}
-	}
-
-	function prepareEggs()
-	{
-		eggs = [];
-		createEgg(10, - 10);
-		createEgg(- 10, 0);
-		createEgg(10, 10);
-	}
-	
-	function crackEgg(egg)
-	{
-		egg_cracking.playCheck();
-		//future space for stuff
-		removeEgg();
-
-		function removeEgg()
-		{
-			removeObject(egg, eggs);
-		}
-	}
-
-	function playGame()
-	{
-		if (newGame)
-		{
-			initGameUI();
-			genMap();
-			prepareEggs();
-			newGame = false;
 		}
 	}
 
@@ -802,6 +798,17 @@ function startLogic()
 		}, 100);
 	}
 
+	function playGame()
+	{
+		if (newGame)
+		{
+			initGameUI();
+			genMap();
+			prepareEggs();
+			newGame = false;
+		}
+	}
+	
 	function endGame()
 	{
 		if (worms.length == 0 || eggs.length == 0)
@@ -1098,55 +1105,6 @@ function startLogic()
 	}
 
 	/**
-	 * renders the BG of the game screen by reading an array representing the
-	 * tiles and their orientation
-	 */
-	function renderMap()
-	{
-		for (var x = 0; x < tileCountX; x ++)
-		{
-			for (var y = 0; y < tileCountY; y ++)
-			{
-
-				var tempX = 0;
-				var tempY = 0;
-				var rot = spriteTiles[x][y].rotation;
-
-				switch (rot)
-				{
-					case 0:
-						tempX = 0;
-						tempY = 0;
-						break;
-					case 1:
-						tempX = 0;
-						tempY = - 1;
-						break;
-					case 2:
-						tempX = - 1;
-						tempY = - 1;
-						break;
-					case 3:
-						tempX = - 1;
-						tempY = 0;
-						break;
-				}
-
-				ctx.save();
-				ctx.translate((x * bgTile.w), (y * bgTile.h));
-
-				ctx.rotate(((90 * spriteTiles[x][y].rotation) * Math.PI) / 180);
-				ctx.drawImage(image,
-						spriteTiles[x][y].id * bgTile.srcX, bgTile.srcY,
-						bgTile.srcW, bgTile.srcH,
-						(tempX * 32), (tempY * 32),
-						bgTile.w, bgTile.h);
-				ctx.restore();
-			}
-		}
-	}
-
-	/**
 	 * updates and rerenders the scoreUI on the game screen
 	 */
 	function showScoreUI()
@@ -1197,7 +1155,56 @@ function startLogic()
 
 		renderMsg(btnMessages);
 	}
+	
+	/**
+	 * renders the BG of the game screen by reading an array representing the
+	 * tiles and their orientation
+	 */
+	function renderMap()
+	{
+		for (var x = 0; x < tileCountX; x ++)
+		{
+			for (var y = 0; y < tileCountY; y ++)
+			{
 
+				var tempX = 0;
+				var tempY = 0;
+				var rot = spriteTiles[x][y].rotation;
+
+				switch (rot)
+				{
+					case 0:
+						tempX = 0;
+						tempY = 0;
+						break;
+					case 1:
+						tempX = 0;
+						tempY = - 1;
+						break;
+					case 2:
+						tempX = - 1;
+						tempY = - 1;
+						break;
+					case 3:
+						tempX = - 1;
+						tempY = 0;
+						break;
+				}
+
+				ctx.save();
+				ctx.translate((x * bgTile.w), (y * bgTile.h));
+
+				ctx.rotate(((90 * spriteTiles[x][y].rotation) * Math.PI) / 180);
+				ctx.drawImage(image,
+						spriteTiles[x][y].id * bgTile.srcX, bgTile.srcY,
+						bgTile.srcW, bgTile.srcH,
+						(tempX * 32), (tempY * 32),
+						bgTile.w, bgTile.h);
+				ctx.restore();
+			}
+		}
+	}
+	
 	/**
 	 * renders all MessageObjects in the given array based on each objects
 	 * proporties
