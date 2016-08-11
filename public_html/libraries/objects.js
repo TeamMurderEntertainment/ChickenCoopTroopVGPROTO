@@ -78,7 +78,7 @@ var MessageObject = function ()
 
 var spriteID = function (id, rotation)
 {
-	if (id < 0 || id > 5)
+	if (id < 0 || id > 7)
 		console.log("Invalid ID : " + id);
 	if (rotation < 0 || rotation > 3)
 		console.log("Invalid Rotation : " + rotation);

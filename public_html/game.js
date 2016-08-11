@@ -554,8 +554,8 @@ function startLogic()
 	function prepareEggs()
 	{
 		eggs = [];
-		createEgg(10, - 10);
-		createEgg(- 10, 0);
+		createEgg(10, -10);
+		createEgg(-10, 0);
 		createEgg(10, 10);
 	}
 
@@ -606,7 +606,7 @@ function startLogic()
 			range = range - worm.sprite.h;
 		}
 
-		var domain = getRandom(0, (! axis ? canvas.width : canvas.height));
+		var domain = getRandom(0, (!axis ? canvas.width : canvas.height));
 
 		if (axis)
 		{
@@ -863,6 +863,8 @@ function startLogic()
 	 * grass corner = 3
 	 * fence edge = 4
 	 * fence corner = 5
+	 * rock = 6
+	 * grass = 7
 	 */
 	function genMap()
 	{
@@ -875,19 +877,23 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 				id = 0;
+				rotation = getRandom(0, 3);
 
 				//level border in clockwise order from top left
-				if (y == 0)								// top side
+				if (y == 0)									// top side
+				{
 					id = EDGE;
+					rotation = 0;
+				}
 				if (x == tileCountX - 1)					// right side
 				{
 					id = EDGE;
@@ -927,10 +933,11 @@ function startLogic()
 				}
 
 				//random rocks 1 space inside border
-				if (x > 1 && x < (tileCountX - 1) - 1)
-					if (y > 1 && y < (tileCountY - 1) - 1)
-						if (Math.random() > 0.95)
-							id = (Math.random() > 0.60 ? 1 : 6);
+				if (x >= 1 && x <= (tileCountX - 1) - 1)
+					if (y >= 1 && y <= (tileCountY - 1) - 1)
+						if (Math.random() > 0.9)
+						id = (Math.random() > 0.5 ? 1 : 7);
+
 
 				spriteTiles[x].push(new spriteID(id, rotation));
 			}
@@ -1001,7 +1008,7 @@ function startLogic()
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
 			{
-				SFX = ! SFX;
+				SFX = !SFX;
 				button_sfx.playCheck();
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
@@ -1013,7 +1020,7 @@ function startLogic()
 				else
 					menu_music.play();
 
-				music = ! music;
+				music = !music;
 			}
 		}
 		else if (gameState == PLAYING)
@@ -1043,7 +1050,7 @@ function startLogic()
 	 */
 	function mouseMoved(e)
 	{
-		if (! buttonPressed(e))
+		if (!buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
 		}
@@ -1080,7 +1087,7 @@ function startLogic()
 	 */
 	function entityMove(x, y, entity)
 	{
-		if (! isNaN(x) && ! isNaN(y))
+		if (!isNaN(x) && !isNaN(y))
 		{
 			var dx = entity.x + entity.halfWidth() - x;
 			var dy = entity.y + entity.halfHeight() - y;
@@ -1118,7 +1125,7 @@ function startLogic()
 		if (entity.r != 0)
 			ctx.rotate(Math.radians(entity.r - 90));
 
-		ctx.translate(- entity.halfWidth(), - entity.halfHeight());
+		ctx.translate(-entity.halfWidth(), -entity.halfHeight());
 
 		ctx.drawImage(image,
 				entity.srcX, //srcX			
@@ -1188,9 +1195,9 @@ function startLogic()
 	 */
 	function renderMap()
 	{
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 
 				var tempX = 0;
@@ -1205,14 +1212,14 @@ function startLogic()
 						break;
 					case 1:
 						tempX = 0;
-						tempY = - 1;
+						tempY = -1;
 						break;
 					case 2:
-						tempX = - 1;
-						tempY = - 1;
+						tempX = -1;
+						tempY = -1;
 						break;
 					case 3:
-						tempX = - 1;
+						tempX = -1;
 						tempY = 0;
 						break;
 				}
@@ -1222,7 +1229,7 @@ function startLogic()
 
 				ctx.rotate(((90 * spriteTiles[x][y].rotation) * Math.PI) / 180);
 				ctx.drawImage(image,
-						spriteTiles[x][y].id * bgTile.srcX, bgTile.srcY,
+						(spriteTiles[x][y].id % 6) * bgTile.srcX, Math.floor(spriteTiles[x][y].id / 6)* bgTile.h ,
 						bgTile.srcW, bgTile.srcH,
 						(tempX * 32), (tempY * 32),
 						bgTile.w, bgTile.h);
@@ -1238,7 +1245,7 @@ function startLogic()
 	 */
 	function renderMsg(msgs)
 	{
-		for (var i = 0; i < msgs.length; i ++)
+		for (var i = 0; i < msgs.length; i++)
 		{
 			var msg = msgs[i];
 			if (msg.visible)
@@ -1259,7 +1266,7 @@ function startLogic()
 	 */
 	function renderSprites(spritesArray)
 	{
-		for (var i = 0; i < spritesArray.length; i ++)
+		for (var i = 0; i < spritesArray.length; i++)
 		{
 
 			var sprite = spritesArray[i];
