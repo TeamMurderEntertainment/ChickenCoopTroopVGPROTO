@@ -8,11 +8,11 @@ bgRock 0 32 32 32
 
 currentNothing 32 32 192 32
 
-buttonCap 0 64 8 32
-buttonMiddle 9 64 1 32
+buttonCap 320 128 16 64
+buttonMiddle 329 128 2 64
 
-checkboxeEmpty 176 32 16 16
-checkboxFull 16 80 16 16
+checkboxeEmpty 352 128 32 32
+checkboxFull 352 160 32 32
 
 chicken 0 64 64 64
 chickenBoop 64 64 64 64
