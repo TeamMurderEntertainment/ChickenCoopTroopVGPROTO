@@ -65,6 +65,32 @@ function startLogic()
 			};
 			assetsToLoad.push(button_sfx);
 		}
+
+		var siren = document.querySelector("#siren");
+		{
+			siren.addEventListener("canplaythrough", loadHandler);
+			siren.volume = 0.4;
+			siren.load();
+			siren.playCheck = function ()
+			{
+				if (SFX)
+					siren.play();
+			};
+			assetsToLoad.push(siren);
+		}
+
+		var fanfare = document.querySelector("#fanfare");
+		{
+			fanfare.addEventListener("canplaythrough", loadHandler);
+			fanfare.volume = 1;
+			fanfare.load();
+			fanfare.playCheck = function ()
+			{
+				if (SFX)
+					fanfare.play();
+			};
+			assetsToLoad.push(fanfare);
+		}
 	}
 	// Sprite sheet
 	var image = new Image();
@@ -93,12 +119,14 @@ function startLogic()
 			squish.removeEventListener("canplaythrough", loadHandler);
 			button_sfx.removeEventListener("canplaythrough", loadHandler);
 			egg_cracking.removeEventListener("canplaythrough", loadHandler);
+			fanfare.removeEventListener("canplaythrough", loadHandler);
+			siren.removeEventListener("canplaythrough", loadHandler);
 
 			canvas.addEventListener("mousedown", mouseLocation);
 			canvas.addEventListener("mouseup", mouseReset);
 			window.addEventListener("keydown", keyPressed);
 
-			if (typeof loadingTimer == "undefined")
+			if (gameState == LOADING && typeof loadingTimer == undefined)
 				gameState = MENU;
 		}
 	}
@@ -107,7 +135,7 @@ function startLogic()
 
 	function splashHandler()
 	{
-		if (assetsLoaded == assetsToLoad.length)
+		if (assetsLoaded == assetsToLoad.length && gameState == LOADING)
 			gameState = MENU;
 		window.clearTimeout(loadingTimer);
 	}
@@ -133,6 +161,7 @@ function startLogic()
 		var boostDuration;
 		var timeToNextWorm;
 		var newGame = true;
+		var playedEndTune=false;
 	}
 
 	// font variables
@@ -145,7 +174,7 @@ function startLogic()
 
 	// audio toggle variables
 	{
-		var music = false;
+		var music = true;
 		var SFX = true;
 	}
 
@@ -246,21 +275,21 @@ function startLogic()
 		var teamElement = new MessageObject();
 		{
 			teamElement.text = "TEAM";
-			teamElement.font = menuFont;
+			teamElement.font = "normal bold 120px cella";
 			teamElement.fontStyle = "red";
-			teamElement.x = ((canvas.width / 2) - ((teamElement.text.length * fontHMenu) / 2) -50);
-			teamElement.y = 350;
+			teamElement.x = ((canvas.width / 2) - ((teamElement.text.length * 84) / 2) - 100);
+			teamElement.y = 340;
 			teamElement.visible = false;
 			splashMessages.push(teamElement);
 		}
-
+		
 		var murderElement = new MessageObject();
 		{
 			murderElement.text = "MURDER";
-			murderElement.font = menuFont;
+			murderElement.font = "normal bold 120px cella";
 			murderElement.fontStyle = "red";
-			murderElement.x = ((canvas.width / 2) - ((murderElement.text.length * fontHMenu) / 2)+20);
-			murderElement.y = 400;
+			murderElement.x = ((canvas.width / 2) - ((murderElement.text.length * 84) / 2) + 50);
+			murderElement.y = 450;
 			murderElement.visible = false;
 			splashMessages.push(murderElement);
 		}
@@ -361,7 +390,7 @@ function startLogic()
 					else if (this.state == 2)
 						this.ascend = false;
 
-					if (! this.ascend)
+					if (!this.ascend)
 						this.state -= 1;
 					else if (this.ascend)
 						this.state += 1;
@@ -598,8 +627,8 @@ function startLogic()
 	function prepareEggs()
 	{
 		eggs = [];
-		createEgg(10, - 10);
-		createEgg(- 10, 0);
+		createEgg(10, -10);
+		createEgg(-10, 0);
 		createEgg(10, 10);
 	}
 
@@ -659,7 +688,7 @@ function startLogic()
 			range = range - worm.sprite.h;
 		}
 
-		var domain = getRandom(0, (! axis ? canvas.width : canvas.height));
+		var domain = getRandom(0, (!axis ? canvas.width : canvas.height));
 
 		if (axis)
 		{
@@ -732,7 +761,7 @@ function startLogic()
 
 		var walkingChicken = false;
 
-		if (! isNaN(clickLocation[0]) && ! isNaN(clickLocation[1]))
+		if (!isNaN(clickLocation[0]) && !isNaN(clickLocation[1]))
 		{
 			walkingChicken = true;
 			chicken.animateCycle();
@@ -798,14 +827,15 @@ function startLogic()
 	/**
 	 * initilizes the UI, run ONCE at the START of each game or level
 	 */
-	function initGameUI()
+	function initGame()
 	{
 		score = 0;
 		minScore = 0;
-		timeInSeconds = 5;
+		timeInSeconds = 60;
 		level = 1;
 		powerUp = 0;
 		powerUpSmoother = 0;
+		playedEndTune = false;
 
 		powerUpGray.visible = true;
 
@@ -903,6 +933,15 @@ function startLogic()
 	 */
 	function playGame()
 	{
+		if (newGame)
+		{
+			//chicken info click listener here
+			initGame();
+			genMap();
+			prepareEggs();
+			newGame = false;
+		}
+		
 		for (i = 0; i < worms.length; i ++)
 			calcWorm(worms[i]);
 
@@ -910,17 +949,6 @@ function startLogic()
 
 		if (eggs.length < 1)
 			gameState = GAMEEND;
-
-		if (newGame)
-		{
-			//chicken info click listener here
-
-
-			initGameUI();
-			genMap();
-			prepareEggs();
-			newGame = false;
-		}
 	}
 
 	/**
@@ -937,9 +965,23 @@ function startLogic()
 		if (worms.length == 0 || eggs.length == 0)
 		{
 			if (timeInSeconds == 0)
+			{
+				if (!playedEndTune)
+				{
+					playedEndTune=true;
+					fanfare.playCheck();
+				}
 				endElement.text = "Times up, you got " + score + " points for killing worms.";
+			}
 			else
+			{
+				if (!playedEndTune)
+				{
+					playedEndTune=true;
+					siren.playCheck();
+				}
 				endElement.text = "The nest has fallen, you got " + score + " points for killing worms.";
+			}
 
 			endElement.update();
 			endElement.visible = true;
@@ -975,13 +1017,13 @@ function startLogic()
 			CORNER = 5;
 		}
 
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
 			var id = 0;
 			var rotation = 0;
 
 			spriteTiles[x] = [];
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 				id = 0;
 				rotation = getRandom(0, 3);
@@ -1106,7 +1148,7 @@ function startLogic()
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], SFXRect))
 			{
-				SFX = ! SFX;
+				SFX = !SFX;
 				button_sfx.playCheck();
 			}
 			if (hitTestPoint(clickLocation[0], clickLocation[1], musicRect))
@@ -1118,7 +1160,7 @@ function startLogic()
 				else
 					menu_music.play();
 
-				music = ! music;
+				music = !music;
 			}
 		}
 		else if (gameState == PLAYING)
@@ -1148,7 +1190,7 @@ function startLogic()
 	 */
 	function mouseMoved(e)
 	{
-		if (! buttonPressed(e))
+		if (!buttonPressed(e))
 		{
 			removeEventListener("mousemove", mouseMoved);
 		}
@@ -1185,7 +1227,7 @@ function startLogic()
 	 */
 	function entityMove(x, y, entity)
 	{
-		if (! isNaN(x) && ! isNaN(y))
+		if (!isNaN(x) && !isNaN(y))
 		{
 			var dx = entity.x + entity.halfWidth() - x;
 			var dy = entity.y + entity.halfHeight() - y;
@@ -1223,7 +1265,7 @@ function startLogic()
 		if (entity.r != 0)
 			ctx.rotate(Math.radians(entity.r - 90));
 
-		ctx.translate(- entity.halfWidth(), - entity.halfHeight());
+		ctx.translate(-entity.halfWidth(), -entity.halfHeight());
 
 		ctx.drawImage(image,
 				entity.srcX, //srcX			
@@ -1306,9 +1348,9 @@ function startLogic()
 	 */
 	function renderMap()
 	{
-		for (var x = 0; x < tileCountX; x ++)
+		for (var x = 0; x < tileCountX; x++)
 		{
-			for (var y = 0; y < tileCountY; y ++)
+			for (var y = 0; y < tileCountY; y++)
 			{
 
 				var tempX = 0;
@@ -1323,14 +1365,14 @@ function startLogic()
 						break;
 					case 1:
 						tempX = 0;
-						tempY = - 1;
+						tempY = -1;
 						break;
 					case 2:
-						tempX = - 1;
-						tempY = - 1;
+						tempX = -1;
+						tempY = -1;
 						break;
 					case 3:
-						tempX = - 1;
+						tempX = -1;
 						tempY = 0;
 						break;
 				}
@@ -1356,7 +1398,7 @@ function startLogic()
 	 */
 	function renderMsg(msgs)
 	{
-		for (var i = 0; i < msgs.length; i ++)
+		for (var i = 0; i < msgs.length; i++)
 		{
 			var msg = msgs[i];
 			if (msg.visible)
@@ -1377,7 +1419,7 @@ function startLogic()
 	 */
 	function renderSprites(spritesArray)
 	{
-		for (var i = 0; i < spritesArray.length; i ++)
+		for (var i = 0; i < spritesArray.length; i++)
 		{
 
 			var sprite = spritesArray[i];
