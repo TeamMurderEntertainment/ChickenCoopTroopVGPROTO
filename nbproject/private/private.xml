@@ -10,7 +10,7 @@
             </bookmark>
             <bookmark id="3">
                 <name>Render</name>
-                <line>117</line>
+                <line>118</line>
                 <key/>
             </bookmark>
         </file>
@@ -21,6 +21,7 @@
             <file>file:/C:/Users/User/Documents/Programming/ChickenCoopTroopVGPROTO/public_html/libraries/basicFunctions.js</file>
             <file>file:/C:/Users/User/Documents/Programming/ChickenCoopTroopVGPROTO/public_html/index.html</file>
             <file>file:/C:/Users/User/Documents/Programming/ChickenCoopTroopVGPROTO/public_html/libraries/objects.js</file>
+            <file>file:/C:/Users/User/Documents/Programming/ChickenCoopTroopVGPROTO/public_html/images/spritesheet.png</file>
         </group>
     </open-files>
 </project-private>

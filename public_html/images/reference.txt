@@ -1,23 +1,33 @@
 bgDirt 0 0 32 32
-bgRock 32 0 32 32
+bgPebbles 32 0 32 32
 bgGrassEdge 64 0 32 32
 bgGrassCorner 96 0 32 32
 bgFenceEdge 128 0 32 32
 bgFenceCorner 160 0 32 32
+bgRock 0 32 32 32
 
-currentNothing 0 32 192 32
+currentNothing 32 32 192 32
 
-buttonCap 0 64 8 32
-buttonMiddle 9 64 1 32
+buttonCap 320 128 16 64
+buttonMiddle 329 128 2 64
 
-chicken 32 64 64 64
-chickenBoop 96 64 64 64
+checkboxeEmpty 352 128 32 32
+checkboxFull 352 160 32 32
+
+chicken 0 64 64 64
+chickenBoop 64 64 64 64
+
+speedBoostOff 192 128 64 64
+speedBoostOn 256 128 64 64
 
 worm_0 0 128 32 64
 worm_1 32 128 32 64
 worm_2 64 128 32 64
-worm_3 96 128 32 64
+worm_dead 96 128 32 64
 
-title 192 0 512 192
+nest 128 128 64 64
+egg 128 32 32 32
+
+title 192 0 512 128
 
 menuBG 0 192 1024 768
