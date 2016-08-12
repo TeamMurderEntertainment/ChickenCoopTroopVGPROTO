@@ -275,21 +275,21 @@ function startLogic()
 		var teamElement = new MessageObject();
 		{
 			teamElement.text = "TEAM";
-			teamElement.font = menuFont;
+			teamElement.font = "normal bold 120px cella";
 			teamElement.fontStyle = "red";
-			teamElement.x = ((canvas.width / 2) - ((teamElement.text.length * fontHMenu) / 2) - 50);
-			teamElement.y = 350;
+			teamElement.x = ((canvas.width / 2) - ((teamElement.text.length * 84) / 2) - 100);
+			teamElement.y = 340;
 			teamElement.visible = false;
 			splashMessages.push(teamElement);
 		}
-
+		
 		var murderElement = new MessageObject();
 		{
 			murderElement.text = "MURDER";
-			murderElement.font = menuFont;
+			murderElement.font = "normal bold 120px cella";
 			murderElement.fontStyle = "red";
-			murderElement.x = ((canvas.width / 2) - ((murderElement.text.length * fontHMenu) / 2) + 20);
-			murderElement.y = 400;
+			murderElement.x = ((canvas.width / 2) - ((murderElement.text.length * 84) / 2) + 50);
+			murderElement.y = 450;
 			murderElement.visible = false;
 			splashMessages.push(murderElement);
 		}
