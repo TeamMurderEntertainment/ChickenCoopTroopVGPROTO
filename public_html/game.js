@@ -126,7 +126,7 @@ function startLogic()
 			canvas.addEventListener("mouseup", mouseReset);
 			window.addEventListener("keydown", keyPressed);
 
-			if (typeof loadingTimer == "undefined")
+			if (gameState == LOADING)
 				gameState = MENU;
 		}
 	}
