@@ -1,3 +1,5 @@
+//Chicken Coop Troop
+//Made by Jordan Moore and Stewart Holmes
 function startLogic()
 {
 	// canvas variable set up
