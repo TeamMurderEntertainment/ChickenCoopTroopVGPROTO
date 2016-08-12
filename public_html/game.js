@@ -126,7 +126,7 @@ function startLogic()
 			canvas.addEventListener("mouseup", mouseReset);
 			window.addEventListener("keydown", keyPressed);
 
-			if (gameState == LOADING)
+			if (gameState == LOADING && typeof loadingTimer == undefined)
 				gameState = MENU;
 		}
 	}
@@ -135,7 +135,7 @@ function startLogic()
 
 	function splashHandler()
 	{
-		if (assetsLoaded == assetsToLoad.length)
+		if (assetsLoaded == assetsToLoad.length && gameState == LOADING)
 			gameState = MENU;
 		window.clearTimeout(loadingTimer);
 	}
