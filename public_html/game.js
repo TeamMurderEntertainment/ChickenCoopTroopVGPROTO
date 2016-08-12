@@ -174,7 +174,7 @@ function startLogic()
 
 	// audio toggle variables
 	{
-		var music = false;
+		var music = true;
 		var SFX = true;
 	}
 
@@ -831,7 +831,7 @@ function startLogic()
 	{
 		score = 0;
 		minScore = 0;
-		timeInSeconds = 15;
+		timeInSeconds = 60;
 		level = 1;
 		powerUp = 0;
 		powerUpSmoother = 0;
